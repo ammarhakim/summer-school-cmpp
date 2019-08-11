@@ -1,6 +1,11 @@
 Computational Methods in Plasma Physics 2019
 ++++++++++++++++++++++++++++++++++++++++++++
 
+.. contents::
+
+Background
+----------
+
 Vast majority of plasma physics is contained in the Vlasov-Maxwell
 equations that describes the evolution of a particle distribution
 :math:`f_s(t,\mathbf{x},\mathbf{v})` function in 6D phase-space. The
