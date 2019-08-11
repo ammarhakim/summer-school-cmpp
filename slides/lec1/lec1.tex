@@ -176,7 +176,62 @@
 \begin{frame}{Conservation properties of Vlasov-Maxwell equations}
   \small%
   It is important to design methods that preserve at least some
-  properties of continuous Vlasov-Maxwell system.
+  properties of continuous Vlasov-Maxwell system. Define the moment
+  operator for any function $\varphi(\mvec{v})$ as
+  \begin{align*}
+    \langle \varphi(\mvec{v}) \rangle_s
+    \equiv
+    \int_{-\infty}^{\infty} \varphi(\mvec{v}) f_s(t,\mvec{x},\mvec{v}) \dtv.
+    \label{eq:momentDefinition}
+  \end{align*}
+  The Vlasov-Maxwell system conserves particles:
+  \begin{align*}
+    \frac{d}{dt}\int_\Omega \sum_s \langle 1 \rangle_s \dtx = 0.
+  \end{align*}
+  The Vlasov-Maxwell system conserves total (particles plus field)
+  momentum.
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \left( \sum_s \langle m_s\mvec{v} \rangle_s + \epsilon_0 \mvec{E}\times\mvec{B} \right) \dtx = 0.
+  \end{align*}
+  The Vlasov-Maxwell system conserves total (particles plus field) energy.
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \left(\sum_s \langle \frac{1}{2} m_s |\mvec{v}|^2 \rangle_s + \frac{\epsilon_0}{2} |\mvec{E}|^2 + \frac{1}{2\mu_0} |\mvec{B}|^2 \right) \dtx = 0.
+  \end{align*}
+\end{frame}
+
+\begin{frame}{Conservation properties of Vlasov-Maxwell equations}
+  \small
+  Besides the fundamental conservation laws, in the \emph{absence of
+    collisions} we can also show that
+  \begin{align*}
+    \frac{d}{dt}\int_K \frac{1}{2} f_s^2\thinspace d\mvec{z} = 0,
+  \end{align*}
+  where the integration is taken over the complete phase-space.
+
+  Also, the entropy is a \emph{non-decreasing} function of time
+  \begin{align*}
+    \frac{d}{dt}\int_K -f_s \ln(f_s) \thinspace d\mvec{z} \ge 0.
+  \end{align*}
+  For collisionless system the entropy remains \emph{constant}.
+
+  (Prove these properties as homework/classwork problems). Note that
+  it is not always possible to ensure all these properties are
+  preserved numerically. For example: usually one can either ensure
+  momentum \emph{or} energy conservation but not both; it is very hard
+  to ensure $f(t,\mvec{x},\mvec{v})>0$.
+
+  {\bf Much of modern computational plasma physics research is aimed
+    towards constructing schemes that preserve these properties.}
+\end{frame}  
+
+\end{document}
+
+
+\begin{frame}{}
+\end{frame}
+
+% ----------------------------------------------------------------
+
   \begin{itemize}
   \item The distribution function is positive
     $f(t,\mvec{x},\mvec{v})>0$
@@ -196,28 +251,3 @@
   preserved numerically. For example, usually one can either ensure
   momentum \emph{or} energy conservation but not both. It is very hard
   to ensure $f(t,\mvec{x},\mvec{v})>0$.
-\end{frame}
-
-\end{document}
-
-
-\begin{frame}{}
-\end{frame}
-
-% ----------------------------------------------------------------
-
-% JUNK stuff
-
-\begin{frame}{For general linear systems in multiple dimensions need
-    to treat fluxes dimension-by-dimension}
-
-  Consider a general 2D linear hyperbolic system
-  \begin{align*}
-    \pfrac{\mvec{Q}}{t} + \mvec{A}_x\pfrac{\mvec{Q}}{x} + \mvec{A}_y\pfrac{\mvec{Q}}{y} = 0.
-  \end{align*}
-  In general, there is \emph{no transformation} of these equations
-  that will decouple them in 2D (or higher dimensions). That is, the
-  matrices $\mvec{A}_x$ and $\mvec{A}_y$ are not simultaneously
-  diagonalizable.
-  
-\end{frame}

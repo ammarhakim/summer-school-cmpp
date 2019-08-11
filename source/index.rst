@@ -91,4 +91,18 @@ techniques that are useful in plasma physics.
 Lecture 1: Single Particle Motion and Ordinary Differential Equations
 ---------------------------------------------------------------------
 
-Something.
+Read above introductory summary for overall background. It is
+important to understand how to derive conservation and other
+properties of the Vlasov-Maxwell system. Much of modern computational
+plasma physics is focused on inventing schemes that preserve at least
+some of these properties of the continuous system. See any text book
+or the following `excerpt <./_static/Juno-et-al-JCP-2018-Proofs.pdf>`_
+from [Juno2019]_ for proofs.
+
+References
+----------
+
+.. [Juno2019] Juno, J., Hakim, A., TenBarge, J., Shi, E.,
+  Dorland, W. (2018). "Discontinuous Galerkin algorithms for fully
+  kinetic plasmas", *Journal of Computational Physics*, **353**,
+  110–147. http://doi.org/10.1016/j.jcp.2017.10.009
