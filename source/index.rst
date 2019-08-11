@@ -100,6 +100,23 @@ book or the following `excerpt
 <./_static/Juno-et-al-JCP-2018-Proofs.pdf>`_ from [Juno2019]_ for
 proofs.
 
+Particle-in-cell methods are based on pushing macro-particles. These
+represent the motion of characteristics in phase-space, along which
+the distribution function is conserved. The macro-particle
+equations-of-motion are
+
+.. math::
+
+   \frac{d\mathbf{x}}{dt} &= \mathbf{v} \\
+   \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
+
+The most widely used method to solve this system of ODEs is the *Boris
+algorithm*. This is surprizingly good: it is a *second-order*,
+*time-centered* method that *conserves phase-space volume*. However,
+the error in phase-velocity (that is there is an error in time-period
+of orbits) accumulates *linearly*. See [Qin2013]_ for proofs that the
+Boris algorithm is *not* symplectic but conserves phase-space volume.
+
 References
 ----------
 
@@ -107,3 +124,7 @@ References
   Dorland, W. (2018). "Discontinuous Galerkin algorithms for fully
   kinetic plasmas", *Journal of Computational Physics*, **353**,
   110–147. http://doi.org/10.1016/j.jcp.2017.10.009
+
+.. [Qin2013] Qin, H., Zhang, S., Xiao, J., Liu, J., Sun, Y., &
+   Tang, W. M. (2013). "Why is Boris algorithm so good?"  Physics of
+   Plasmas, **20** (8), 084503–5. http://doi.org/10.1063/1.4818428
