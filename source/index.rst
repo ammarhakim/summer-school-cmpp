@@ -63,8 +63,7 @@ we will study:
 - Near first-principles simulations methods in which the
   Vlasov-Maxwell equation is solved directly. We will study two
   methods: the finite-difference-time-domain particle-in-cell method
-  (FDTD PIC) (Lectures 1 and 2) and a class of continuum methods
-  (Lecture 4).
+  (FDTD PIC) (Lectures 1 and 2)
 
 - Solving fluid equations that are obtained from taking moments of the
   Vlasov-Maxwell equations and making a closure to approximate the
@@ -72,6 +71,11 @@ we will study:
   modern approach based on the theory of hyperbolic PDEs and Riemann
   solvers. We will also look at the special requirements of solvers
   that are required to study fusion problems (Lecture 3).
+
+- Directly discretizing the Vlasov-Maxwell equations as a PDE in
+  6D. This is an emerging area of active research and has applications
+  to study of turbulence in fusion machines and also exploring
+  fundamental plasma physics in phase-space. (Lecture 4)
 
 Through these topics we will look at the general applied mathematics
 literature for solvers for ordinary differential equations (ODEs) and
