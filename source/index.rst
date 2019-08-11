@@ -95,9 +95,10 @@ Read above introductory summary for overall background. It is
 important to understand how to derive conservation and other
 properties of the Vlasov-Maxwell system. Much of modern computational
 plasma physics is focused on inventing schemes that preserve at least
-some of these properties of the continuous system. See any text book
-or the following `excerpt <./_static/Juno-et-al-JCP-2018-Proofs.pdf>`_
-from [Juno2019]_ for proofs.
+some of these properties of the continuous system. See any plasma text
+book or the following `excerpt
+<./_static/Juno-et-al-JCP-2018-Proofs.pdf>`_ from [Juno2019]_ for
+proofs.
 
 References
 ----------
