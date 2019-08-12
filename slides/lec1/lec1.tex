@@ -74,7 +74,7 @@
 { \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
 }
 
-\date[8/11/2019]{PPPL Graduate Summer School, 2019}
+\date[8/12/2019]{PPPL Graduate Summer School, 2019}
 
 \begin{document}
 
@@ -226,29 +226,172 @@
 \begin{frame}{Single particle motion in an electromagnetic field}
   \small%
   \begin{itemize}
-    \item In the \emph{Particle-in-cell} (PIC) method the Vlasov-Maxwell
-      equation is solved in the \emph{Lagrangian frame} in which the
-      phase-space is represented by \emph{finite-sized}
-      ``macro-particles''.
-    \item In the Lagrangian frame the distribution
-      function remains constants along \emph{characteristics} in
-      phase-space.
-    \item These characteristics satisfy the ODE of particles moving
-      under Lorentz force law
-      \begin{align*}
-        \frac{d\mvec{x}}{dt} &= \mvec{v} \\
-        \frac{d\mvec{v}}{dt} &= \frac{q}{m}(\mvec{E}(\mvec{x},t) + \mvec{v}\times\mvec{B}(\mvec{x},t))
-      \end{align*}
-    \item In PIC one uses a large number of macro-particles to follow
-      a bunch of characteristics in phase-space. These macro-particles
-      move given the electromagnetic field. As the particles move they
-      ``deposit'' charges and currents on a grid, which are in turn
-      used to update the electromagnetic field.
-    \item We will first focus on solving the equations-of-motion for
-      the macro-particles, leaving solution of Maxwell equations and
-      coupling to particles for Lecture 2.
-    \end{itemize}
+  \item In the \emph{Particle-in-cell} (PIC) method the Vlasov-Maxwell
+    equation is solved in the \emph{Lagrangian frame} in which the
+    phase-space is represented by \emph{finite-sized}
+    ``macro-particles''.
+  \item In the Lagrangian frame the distribution
+    function remains constants along \emph{characteristics} in
+    phase-space.
+  \item These characteristics satisfy the ODE of particles moving
+    under Lorentz force law
+    \begin{align*}
+      \frac{d\mvec{x}}{dt} &= \mvec{v} \\
+      \frac{d\mvec{v}}{dt} &= \frac{q}{m}(\mvec{E}(\mvec{x},t) + \mvec{v}\times\mvec{B}(\mvec{x},t))
+    \end{align*}
+  \item We will first focus on solving the equations-of-motion for
+    the macro-particles, leaving solution of Maxwell equations and
+    coupling to particles for Lecture 2.
+  \end{itemize}
 \end{frame}
+
+\begin{frame}{Simple harmonic oscillator}
+  \small%
+  Consider first the simple harmonic oscillator
+  \begin{align*}
+    \frac{d^2z}{dt^2} = -\omega^2 z^2
+  \end{align*}
+  This has exact solution $z = a\cos(\omega t) + b\sin(\omega t)$,
+  where $a$ and $b$ are arbitrary constants. How to solve this
+  numerically? Write as a system of first-order ODEs
+  \begin{align*}
+    \frac{dz}{dt} = v; \quad \frac{dv}{dt} = -\omega^2 z
+  \end{align*}
+  Note that the coordinates $(z,v)$ label the \emph{phase-space} of
+  the harmonic oscillator. Multiply the second equation by $v$ and use
+  the first equation to get
+  \begin{align*}
+    \frac{d}{dt}\left(\frac{1}{2} v^2 + \frac{1}{2}\omega^2 z^2\right) = 0.
+  \end{align*}
+  This is the \emph{energy} and is \emph{conserved}.%
+  
+  \bf{Question: how to solve the ODE such that the energy is conserved
+    by the \emph{discrete scheme}?}
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  First attempt: use the simplest possible scheme, replace derivatives
+  with difference approximations
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} = v^n; \quad \frac{v^{n+1}-v^n}{\Delta t} = -\omega^2 z^n
+  \end{align*}
+  or
+  \begin{align*}
+    z^{n+1} = z^n + \Delta t v^n; \quad v^{n+1} = v^n - \Delta t \omega^2 z^n
+  \end{align*}
+  This is the \emph{forward Euler} scheme. Lets check if the discrete
+  scheme conserves energy:
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 =
+    (1+\omega^2 \Delta t^2)((v^{n})^2 + \omega^2 (z^{n})^2)
+  \end{align*}
+  The presence of the $\omega^2 \Delta t^2$ in the bracket spoils the
+  conservation. So the forward Euler scheme \emph{does not} conserve
+  energy. Also, note that the energy, in fact, is \emph{increasing}!
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  Closer look: write as a matrix equation
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+    \right]
+    =
+    \underbrace{
+    \left[
+    \begin{matrix}
+      1 & \Delta t \\
+      -\omega^2 \Delta t & 1
+    \end{matrix}
+    \right]
+    }_{\textrm{Jacobian},\ J}
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  Observe that the determinant of the Jacobian is
+  $\det(J)=(1+\omega^2\Delta t^2)$ which is the same factor as appears
+  in the energy relation. One may reasonably conjecture that when this
+  determinant is one, then perhaps energy is conserved.
+
+  \begin{block}{Volume Preserving Scheme}
+    We will call say a scheme preserves \emph{phase-space} volume
+    if the determinant of the Jacobian is $\det(J)=1$.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme}
+  \small%
+  Perhaps a better approximation will be obtained if we use
+  \emph{averaged} values of $z,v$ on the RHS of the discrete
+  equation:
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} &= \frac{v^n +v^{n+1}}{2} \\
+    \frac{v^{n+1}-v^n}{\Delta t} &= -\omega^2\frac{z^n + z^{n+1}}{2}
+  \end{align*}
+  This is an \emph{implicit} method as the solution at the next
+  time-step depends on the old as well as the next time-step
+  values. In this simple case we can explicitly write the update in a
+  matrix form as
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+      \right]
+      =
+      \frac{1}{1+\omega^2\Delta t^2/4}
+    \left[
+      \begin{matrix}
+        1-\omega^2\Delta t^2/4  & \Delta t \\
+        -\omega^2 \Delta t & 1-\omega^2\Delta t^2/4
+      \end{matrix}
+    \right]
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  For this scheme $\det(J)=1$. So the mid-point scheme conserves
+  phase-space volume! Some tedious algebra also shows that
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
+  \end{align*}
+  showing that energy is also conserved by the mid-point scheme!
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme is symplectic}
+  A more stringent constraint on a scheme for the simple harmonic
+  oscillator is that it be \emph{symplectic}. To check if a scheme is
+  symplectic one checks to see if
+  \begin{align*}
+    J^T\sigma J = \sigma
+  \end{align*}
+  where $\sigma$ is the \emph{unit symplectic matrix}
+  \begin{align*}
+    \sigma
+    =
+    \left[
+      \begin{matrix}
+        0 & 1 \\
+        -1 & 0
+      \end{matrix}
+    \right]    
+  \end{align*}
+  Turns out that the mid-point scheme for the harmonic oscillator is
+  also symplectic. Note that if a scheme conserves phase-space
+  volume, it \emph{need not} be symplectic.
+\end{frame}  
 
 \end{document}
 

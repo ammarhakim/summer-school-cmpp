@@ -91,6 +91,8 @@ techniques that are useful in plasma physics.
 Lecture 1: Single Particle Motion and Ordinary Differential Equations
 ---------------------------------------------------------------------
 
+`PDF of slides <./_static/lec1.pdf>`_
+
 Read above introductory summary for overall background. It is
 important to understand how to derive conservation and other
 properties of the Vlasov-Maxwell system. Much of modern computational
@@ -117,6 +119,25 @@ the error in phase-velocity (that is there is an error in time-period
 of orbits) accumulates *linearly*. See [Qin2013]_ for proofs that the
 Boris algorithm is *not* symplectic but conserves phase-space volume.
 
+The concept of phase-space volume preserving and symplectic schemes
+can be more easily understood by looking at the example of a simple
+harmonic oscillator
+
+.. math::
+
+   \frac{d^2z}{dt^2} = -\omega^2 z^2
+
+where :math:`\omega` is the oscillation frequency.
+
+To fully understand the physics behind these concepts one needs to
+understand the *Lagrangian and Hamiltonian formulation* of
+mechanics. For example, see text book of `Goldstein
+<https://www.amazon.com/Classical-Mechanics-Pearson-New-International/dp/1292026553>`_
+or first volume of `Landau and Lifshitz, Mechanics
+<https://archive.org/details/Mechanics_541>`_. An overview of
+Hamiltonian mechanics using *noncanonical coordinates* as applied to
+single particle motion is given in Section II of [CaryBrizard2009]_
+
 References
 ----------
 
@@ -128,3 +149,8 @@ References
 .. [Qin2013] Qin, H., Zhang, S., Xiao, J., Liu, J., Sun, Y., &
    Tang, W. M. (2013). "Why is Boris algorithm so good?"  Physics of
    Plasmas, **20** (8), 084503–5. http://doi.org/10.1063/1.4818428
+
+.. [CaryBrizard2009] Cary, J. R., &
+   Brizard, A. J. (2009). "Hamiltonian theory of guiding-center
+   motion". Reviews of Modern Physics, **81** (2),
+   693–738. http://doi.org/10.1103/RevModPhys.81.693
