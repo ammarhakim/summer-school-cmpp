@@ -391,7 +391,91 @@
   Turns out that the mid-point scheme for the harmonic oscillator is
   also symplectic. Note that if a scheme conserves phase-space
   volume, it \emph{need not} be symplectic.
-\end{frame}  
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  \small%
+  To study the stability, accuracy and convergence of a scheme one usually
+  looks at the first order ODE
+  \begin{align*}
+    \frac{dz}{dt} = -\gamma z
+  \end{align*}
+  where $\gamma = \lambda + i\omega$ is the complex frequency. The
+  exact solution to this equation is $z(t) = z_0 e^{-\gamma t}$. The
+  solution has damped/growing modes ($\lambda>0$ or $\lambda<0$) as
+  well as oscillating modes.
+
+  \begin{itemize}
+    \item The forward Euler scheme for this equation is
+      \begin{align*}
+        z^{n+1} = z^n - \Delta t \gamma z^n = (1-\Delta t\gamma) z^n.
+      \end{align*}
+    \item The mid-point scheme for this equation is
+      \begin{align*}
+        z^{n+1} = \left(\frac{1-\gamma\Delta t/2}{1+\gamma\Delta t/2}\right) z^n
+      \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine how \emph{accurate} the scheme is by looking at how
+  many terms the scheme matches the Taylor series expansion of the
+  exact solution:
+  \begin{align*}
+    z(t^{n+1}) = z(t^n)
+    \left(
+    1 - \gamma\Delta t + \frac{1}{2}\gamma^2 \Delta t^2 - \frac{1}{6}\gamma^3 \Delta t^3 + \ldots
+    \right)
+  \end{align*}
+
+  \begin{itemize}
+  \item The forward Euler scheme matches the \emph{first two terms}
+    \begin{align*}
+      z^{n+1} = z^n (1-\Delta t\gamma)
+    \end{align*}
+  \item The mid-point scheme matches the \emph{first three terms}
+    \begin{align*}
+      z^{n+1} = z^n \left(
+      1-\Delta t\gamma - \frac{1}{2}\gamma^2 \Delta t^2  - \frac{1}{4} \gamma^3 \Delta t^3 + \ldots
+      \right)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine if the scheme is \emph{stable} by looking at the
+  amplification factor $| z^{n+1}/z^n|$. Note that for damped modes
+  ($\lambda>0$) this quantity \emph{decays} in time, while for purely
+  oscillating modes ($\lambda = 0$) this quantity remains
+  \emph{constant}.
+
+  
+  \begin{itemize}
+  \item The amplification factor for the forward Euler scheme in the
+    absence of damping is $1+\omega^2\Delta^2 > 1$, hence this scheme
+    is \emph{unconditionally unstable}.
+  \item The amplification factor for the forward Euler scheme in the
+    absence of damping is exactly 1, showing that the mid-point scheme
+    is \emph{unconditionally stable}, that is, one can take as large
+    time-step one wants without the scheme ``blowing up''. Of course,
+    the errors will increase with larger $\Delta t$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Runge-Kutta schemes}
+  \begin{itemize}
+  \item Even though the forward Euler scheme is unconditionally
+    unstable, we can use it to construct other schemes that \emph{are}
+    stable and are also more accurate (than first order).
+  \item For example, a class of Runge-Kutta schemes can be written as
+    a combination of forward Euler updates. In particular, the
+    \emph{strong stability preserving} schemes are important when
+    solving hyperbolic equations.
+  \item Other multi-stage Runge-Kutta schemes can be constructed that
+    allow very large time-steps for diffusive processes, for example,
+    that come about when time-stepping diffusion equations.
+  \end{itemize}
+\end{frame}
 
 \end{document}
 

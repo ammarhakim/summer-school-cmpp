@@ -1,6 +1,13 @@
 Computational Methods in Plasma Physics 2019
 ++++++++++++++++++++++++++++++++++++++++++++
 
+These are notes, lecture slides and code for use in `PPPL
+<https://www.pppl.gov>`_'s `Graduate Summer School
+<https://gss.pppl.gov/2019/>`_, Computational Methods in Plasma
+Physics mini-course. All material is copyrighted by Ammar Hakim and
+released under the `Creative Commons CC BY License
+<https://creativecommons.org/licenses/>`_.
+
 .. contents::
 
 Background
@@ -86,7 +93,29 @@ Through these topics we will look at the general applied mathematics
 literature for solvers for ordinary differential equations (ODEs) and
 partial differential equations (PDEs), with emphasis of those
 techniques that are useful in plasma physics.
+
+Bitbucket repo for lectures and code
+------------------------------------
+
+You can get all the tex files for the slides, source for this website
+and the code I ran in class by cloning the `Bitbucket repo
+<https://bitbucket.org/ammarhakim/summer-school-cmpp/>`_ for this
+class.
+
+To run the code you need to install the Gkeyll software. Please see
+the `Gkeyll website <http://gkeyll.readthedocs.io>`_ for instructions
+on how to get the code and the postprocessing tools needed. In brief:
+
+- Install the Python `(mini)conda <https://conda.io/miniconda.html>`_
+  package manager
   
+- Install the Gkeyll code using::
+
+    conda install -c gkyl gkeyll
+
+- Install the postprocessing tool as::
+
+    conda install -c gkyl postgkyl
 
 Lecture 1: Single Particle Motion and Ordinary Differential Equations
 ---------------------------------------------------------------------
@@ -101,23 +130,6 @@ some of these properties of the continuous system. See any plasma text
 book or the following `excerpt
 <./_static/Juno-et-al-JCP-2018-Proofs.pdf>`_ from [Juno2019]_ for
 proofs.
-
-Particle-in-cell methods are based on pushing macro-particles. These
-represent the motion of characteristics in phase-space, along which
-the distribution function is conserved. The macro-particle
-equations-of-motion are
-
-.. math::
-
-   \frac{d\mathbf{x}}{dt} &= \mathbf{v} \\
-   \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
-
-The most widely used method to solve this system of ODEs is the *Boris
-algorithm*. This is surprisingly good: it is a *second-order*,
-*time-centered* method that *conserves phase-space volume*. However,
-the error in phase-velocity (that is there is an error in time-period
-of orbits) accumulates *linearly*. See [Qin2013]_ for proofs that the
-Boris algorithm is *not* symplectic but conserves phase-space volume.
 
 The concept of phase-space volume preserving and symplectic schemes
 can be more easily understood by looking at the example of a simple
@@ -137,6 +149,35 @@ or first volume of `Landau and Lifshitz, Mechanics
 <https://archive.org/details/Mechanics_541>`_. An overview of
 Hamiltonian mechanics using *noncanonical coordinates* as applied to
 single particle motion is given in Section II of [CaryBrizard2009]_
+
+A good description of various ODE solvers and their properties is
+given in Chapter 2 of [DurranBook]_. Also `see
+<https://gkeyll.readthedocs.io/en/latest/dev/ssp-rk.html>`_ for
+formulas of the Strong-Stability preserving RK methods and their
+stability regions.
+
+Several ODE schemes have been designed to handle stiff sources and in
+particular, diffusion terms arising from discretization of diffusion
+equations. See [Abdulle2013]_ and also [Meyer2013]_ for description of
+these schemes. In particular, the scheme by Meyer at al is to be
+prefered to it superior stability properties.
+
+Particle-in-cell methods are based on pushing macro-particles. These
+represent the motion of characteristics in phase-space, along which
+the distribution function is conserved. The macro-particle
+equations-of-motion are
+
+.. math::
+
+   \frac{d\mathbf{x}}{dt} &= \mathbf{v} \\
+   \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
+
+The most widely used method to solve this system of ODEs is the *Boris
+algorithm*. This is surprisingly good: it is a *second-order*,
+*time-centered* method that *conserves phase-space volume*. However,
+the error in phase-velocity (that is there is an error in time-period
+of orbits) accumulates *linearly*. See [Qin2013]_ for proofs that the
+Boris algorithm is *not* symplectic but conserves phase-space volume.
 
 A comprehensive review of structure preserving algorithms for use in
 plasma physics is provided by [Morrison2017]_. It has numerous
@@ -160,6 +201,21 @@ References
    motion". Reviews of Modern Physics, **81** (2),
    693–738. http://doi.org/10.1103/RevModPhys.81.693
 
+.. [DurranBook] Dale E. Durran, "Numerical Methods for Fluid
+   Dynamics", Springer. Second Edition.   
+
 .. [Morrison2017] Morrison, P. J. (2017). Structure and
    structure-preserving algorithms for plasma physics. Physics of
    Plasmas, **24** (5), 055502–21. http://doi.org/10.1063/1.4982054
+
+.. [Abdulle2013] Abdulle, A., & Vilmart, G. (2013). "PIROCK: A
+   swiss-knife partitioned implicit–explicit orthogonal Runge–Kutta
+   Chebyshev integrator for stiff diffusion–advection–reaction
+   problems with or without noise". Journal of Computational Physics,
+   **242** (C), 869–888. http://doi.org/10.1016/j.jcp.2013.02.009
+
+.. [Meyer2013] Meyer, C. D., Balsara, D. S., & Aslam, T. D. (2014). "A
+   stabilized Runge–Kutta–Legendre method for explicit
+   super-time-stepping of parabolic and mixed equations". Journal of
+   Computational Physics, **257** (PA),
+   594–626. http://doi.org/10.1016/j.jcp.2013.08.021
