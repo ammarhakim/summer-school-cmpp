@@ -122,6 +122,37 @@ Lecture 1: Single Particle Motion and Ordinary Differential Equations
 
 `PDF of slides <./_static/lec1.pdf>`_
 
+Code
+====
+
+See files `code/lec1/sho-fwd-euler.lua
+<https://bitbucket.org/ammarhakim/summer-school-cmpp/src/master/code/lec1/sho-fwd-euler.lua>`_
+and `code/lec1/sho-mid-point.lua
+<https://bitbucket.org/ammarhakim/summer-school-cmpp/src/master/code/lec1/sho-mid-point.lua>`_
+for forward Euler and mid-point schemes for harmonic oscillator
+problem. You can run the code from the directory it is kept as::
+
+  gkyl sho-mid-point.lua
+
+To plot the trajectory do::
+
+  pgkyl -f sho-mid-point_ptclData.bp traj -e 90 -a 0.0 --fix-aspect
+
+You can get help for options for the `traj` command by doing::
+
+  pgkyl traj --help
+
+To plot the exact trajectory and the computed trajectory do::
+
+  pgkyl -f sho-mid-point_ptclData.bp -f sho-mid-point_exactData.bp traj -e 90 -a 0.0 --fix-aspect
+
+You can save the animate to an mp4 file by passing the `--save` option
+to the `traj` command. This requires that you have the `ffmpeg package
+<https://ffmpeg.org>`_ installed.
+
+Summary
+=======
+
 Read above introductory summary for overall background. It is
 important to understand how to derive conservation and other
 properties of the Vlasov-Maxwell system. Much of modern computational
@@ -161,6 +192,16 @@ particular, diffusion terms arising from discretization of diffusion
 equations. See [Abdulle2013]_ and also [Meyer2013]_ for description of
 these schemes. In particular, the scheme by Meyer at al is to be
 prefered to it superior stability properties.
+
+The ODE solvers described above are low order, that is second or third
+order. Some recent work attempts to construct very high order schemes
+(10-15th order!) that essentially makes the issues of conservation and
+other numerical errors mostly moot. For example, see [ReinSpiegel]_
+for a 15th order scheme for use in gravitational N-body
+simulations. Such very high-order schemes have not found use in
+plasma-physics yet, mainly as the Maxwell solvers used in PIC codes
+are mostly second-order anyway. However, it is possible that these
+very high-order methods are useful in orbit codes.
 
 Particle-in-cell methods are based on pushing macro-particles. These
 represent the motion of characteristics in phase-space, along which
@@ -219,3 +260,9 @@ References
    super-time-stepping of parabolic and mixed equations". Journal of
    Computational Physics, **257** (PA),
    594–626. http://doi.org/10.1016/j.jcp.2013.08.021
+
+.. [ReinSpiegel] Rein, H., & Spiegel, D. S. (2014). ias15: a fast,
+   adaptive, high-order integrator for gravitational dynamics,
+   accurate to machine precision over a billion orbits. Monthly
+   Notices of the Royal Astronomical Society, 446(2),
+   1424–1437. http://doi.org/10.1093/mnras/stu2164
