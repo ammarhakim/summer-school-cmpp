@@ -113,7 +113,7 @@ equations-of-motion are
    \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
 
 The most widely used method to solve this system of ODEs is the *Boris
-algorithm*. This is surprizingly good: it is a *second-order*,
+algorithm*. This is surprisingly good: it is a *second-order*,
 *time-centered* method that *conserves phase-space volume*. However,
 the error in phase-velocity (that is there is an error in time-period
 of orbits) accumulates *linearly*. See [Qin2013]_ for proofs that the
@@ -138,6 +138,11 @@ or first volume of `Landau and Lifshitz, Mechanics
 Hamiltonian mechanics using *noncanonical coordinates* as applied to
 single particle motion is given in Section II of [CaryBrizard2009]_
 
+A comprehensive review of structure preserving algorithms for use in
+plasma physics is provided by [Morrison2017]_. It has numerous
+references to the literature and should be consulted to develop a
+detailed understanding of such schemes.
+
 References
 ----------
 
@@ -154,3 +159,7 @@ References
    Brizard, A. J. (2009). "Hamiltonian theory of guiding-center
    motion". Reviews of Modern Physics, **81** (2),
    693–738. http://doi.org/10.1103/RevModPhys.81.693
+
+.. [Morrison2017] Morrison, P. J. (2017). Structure and
+   structure-preserving algorithms for plasma physics. Physics of
+   Plasmas, **24** (5), 055502–21. http://doi.org/10.1063/1.4982054
