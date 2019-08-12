@@ -470,7 +470,9 @@
   \item For example, a class of Runge-Kutta schemes can be written as
     a combination of forward Euler updates. In particular, the
     \emph{strong stability preserving} schemes are important when
-    solving hyperbolic equations.
+    solving hyperbolic equations. Note that these RK schemes will
+    \emph{not} conserve energy for the harmonic oscillator, but
+    \emph{decay} it.
   \item Other multi-stage Runge-Kutta schemes can be constructed that
     allow very large time-steps for diffusive processes, for example,
     that come about when time-stepping diffusion equations.
