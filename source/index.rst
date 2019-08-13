@@ -168,7 +168,7 @@ harmonic oscillator
 
 .. math::
 
-   \frac{d^2z}{dt^2} = -\omega^2 z^2
+   \frac{d^2z}{dt^2} = -\omega^2 z
 
 where :math:`\omega` is the oscillation frequency.
 
@@ -179,7 +179,7 @@ mechanics. For example, see text book of `Goldstein
 or first volume of `Landau and Lifshitz, Mechanics
 <https://archive.org/details/Mechanics_541>`_. An overview of
 Hamiltonian mechanics using *noncanonical coordinates* as applied to
-single particle motion is given in Section II of [CaryBrizard2009]_
+single particle motion is given in Section II of [CaryBrizard2009]_.
 
 A good description of various ODE solvers and their properties is
 given in Chapter 2 of [DurranBook]_. Also `see
@@ -213,7 +213,7 @@ Code
 ====
 
 See files `code/lec2/lorentz-boris.lua
-<https://bitbucket.org/ammarhakim/summer-school-cmpp/src/master/code/lec1/sho-fwd-euler.lua>`_
+<https://bitbucket.org/ammarhakim/summer-school-cmpp/src/master/code/lec2/lorentz-boris.lua>`_
 
 Summary
 =======
