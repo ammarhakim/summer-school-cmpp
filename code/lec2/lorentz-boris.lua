@@ -44,6 +44,11 @@ function borisPush(t, dt, q, m, ptcl)
    local x, y, z = ptcl.x[0], ptcl.x[1], ptcl.x[2]
    local E_0, E_1, E_2, B_0, B_1, B_2 = emField(t, x, y, z)
 
+   -- half-step electric field update
+   local vm_0 = ptcl.v[0] + qmdt*E_0
+   local vm_1 = ptcl.v[1] + qmdt*E_1
+   local vm_2 = ptcl.v[2] + qmdt*E_2
+
    -- compute t and s vectors
    local t_0 = qmdt*B_0
    local t_1 = qmdt*B_1
@@ -53,11 +58,6 @@ function borisPush(t, dt, q, m, ptcl)
    local s_0 = 2*t_0/(1+tNorm)
    local s_1 = 2*t_1/(1+tNorm)
    local s_2 = 2*t_2/(1+tNorm)
-
-   -- half-step electric field update
-   local vm_0 = ptcl.v[0] + qmdt*E_0
-   local vm_1 = ptcl.v[1] + qmdt*E_1
-   local vm_2 = ptcl.v[2] + qmdt*E_2
 
    -- rotation around magnetic field
    -- (first compute cp = vm X t)

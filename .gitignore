@@ -1,1 +1,9 @@
 build/*
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.bp
+*.h5

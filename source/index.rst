@@ -191,7 +191,7 @@ Several ODE schemes have been designed to handle stiff sources and in
 particular, diffusion terms arising from discretization of diffusion
 equations. See [Abdulle2013]_ and also [Meyer2013]_ for description of
 these schemes. In particular, the scheme by Meyer at al is to be
-prefered to it superior stability properties.
+preferred to it superior stability properties.
 
 The ODE solvers described above are low order, that is second or third
 order. Some recent work attempts to construct very high order schemes
@@ -207,7 +207,10 @@ very high-order methods are useful in orbit codes.
 Lecture 2: The Boris algorithm and FDTD and FV schemes for Maxwell equations
 ----------------------------------------------------------------------------
 
-`PDF of Lecture 2 slides <./_static/lec2.pdf>`_
+`PDF of Lecture 2 slides <./_static/lec2.pdf>`_. Solution to the
+problem of finding :math:`\mathbf{A}` if :math:`\mathbf{A} =
+\mathbf{R} + \mathbf{A}\times\mathbf{B}` is `here
+<./_static/ammar-hackmem-a=r+axb.pdf>`_.
 
 Code
 ====
@@ -217,7 +220,7 @@ See files `code/lec2/lorentz-boris.lua
 
 You can play with this file to do various static or time-dependent
 electromagnetic fields. For example, motion in a constant magnetic
-field, in a field with a gradient, and in a driven sytem. See field
+field, in a field with a gradient, and in a driven system. See field
 specification in `this write up
 <http://ammar-hakim.org/sj/je/je32/je32-vlasov-test-ptcl.html>`_ for
 both non-resonant and resonant drivers.
@@ -236,12 +239,40 @@ equations-of-motion are
    \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
 
 The most widely used method to solve this system of ODEs is the *Boris
-algorithm*. This is surprisingly good: it is a *second-order*,
+algorithm*. See `this excerpt
+<./_static/Birdsall-Landon-Boris-Push.pdf>`_ from Birdsall and Langdon
+book for details on how to implement this efficiently.
+
+The Boris algorithm is surprisingly good: it is a *second-order*,
 *time-centered* method that *conserves phase-space volume*. However,
 the error in phase-velocity (that is there is an error in time-period
 of orbits) accumulates *linearly*, as we saw for the harmonic
 oscillator. See [Qin2013]_ for proofs that the Boris algorithm is
 *not* symplectic but conserves phase-space volume.
+
+The relativistic Boris algorithm does not compute the correct
+:math:`\mathbf{E}\times\math{B}` velocity. This can be corrected for
+and still maintain the volume-preserving property and was done in
+[HigueraCary2017]_.
+
+The Yee-cell preserves the underlying geometric structure of Maxwell
+equations, and ensures that the divergence relations are maintained in
+the case of vacuum fields. In a plasma, however, current deposition
+needs to be done carefully to ensure current continuity is
+satisfied. See [Esirkepov2001]_, for example.
+
+For extension of standard FDTD method to complex geometries, see, for
+example [Nieter2009]_ and other references. Recent research has
+focused on developing finite-element based PIC codes (that maintain
+geometric structure of Maxwell equations), but these are usually very
+expensive to run and very complex to develop.
+
+Sometimes finite-volume schemes are also used to solve Maxwell
+equations. These may have some advantages and disadvantages compared
+to standard FDTD schemes. For example, FV usually do not conserve
+energy and find it hard to satisfy divergence relations. For a
+comparison of FV and FDTD methods see `this page
+<http://ammar-hakim.org/sj/je/je6/je6-maxwell-solvers.html>`_.
 
 A comprehensive review of structure preserving algorithms for use in
 plasma physics is provided by [Morrison2017]_. It has numerous
@@ -285,7 +316,23 @@ References
 
 .. [Qin2013] Qin, H., Zhang, S., Xiao, J., Liu, J., Sun, Y., &
    Tang, W. M. (2013). "Why is Boris algorithm so good?"  Physics of
-   Plasmas, **20** (8), 084503–5. http://doi.org/10.1063/1.4818428   
+   Plasmas, **20** (8), 084503–5. http://doi.org/10.1063/1.4818428
+
+.. [HigueraCary2017] Higuera, A. V., &
+   Cary, J. R. (2017). "Structure-preserving second-order integration
+   of relativistic charged particle trajectories in electromagnetic
+   fields". Physics of Plasmas, **24** (5),
+   052104–7. http://doi.org/10.1063/1.4979989
+
+.. [Esirkepov2001] Esirkepov, T. Z. (2001). "Exact charge conservation
+   scheme for Particle-in-Cell simulation with an arbitrary
+   form-factor", Computer Physics Communications, **135**, 144–153.
+
+.. [Nieter2009] Nieter, C., Cary, J. R., Werner, G. R., Smithe, D. N.,
+   & Stoltz, P. H. (2009). "Application of Dey–Mittra conformal
+   boundary algorithm to 3D electromagnetic modeling". Journal of
+   Computational Physics, **228** (21),
+   7902–7916. http://doi.org/10.1016/j.jcp.2009.07.025
    
 .. [Morrison2017] Morrison, P. J. (2017). Structure and
    structure-preserving algorithms for plasma physics. Physics of

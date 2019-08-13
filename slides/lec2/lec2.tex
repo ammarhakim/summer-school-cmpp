@@ -215,7 +215,242 @@
   time-steps and a rotation due to the magnetic field. Once the
   updated velocity is computed, we can trivially compute the updated
   positions.
+\end{frame}
+
+\begin{frame}{The Boris algorithm for the staggered scheme}
+  How to do the rotation? The Boris algorithm does this in several
+  steps:
+  \begin{itemize}
+  \item Compute the $\mvec{t}$ and $\mvec{s}$ vectors as follows
+    \begin{align*}
+      \mvec{t} &= \frac{q\mvec{B}}{m}\frac{\Delta t}{2} \\
+      \mvec{s} &= \frac{2\mvec{t}}{1+|\mvec{t}|^2}
+    \end{align*}
+  \item Compute $\mvec{v}' = \mvec{v}^- + \mvec{v}^-\times\mvec{t}$
+    and finally $\mvec{v}^+ = \mvec{v}^-+\mvec{v}'\times\mvec{s}$.
+  \end{itemize}
+  See Birdsall and Langdon text book Section 4-3 and 4-4 and figure
+  4-4a. Easily extended to relativistic case.%
+  \vskip0.1in%
+  Note that in the absence of an electric field the Boris algorithm
+  conserves kinetic energy.
+\end{frame}
+
+\begin{frame}{Why is the Boris algorithm so good? Can one do better?}
+  \small%
+  See paper by Qin at. al. Phys. Plasmas, {\bf 20}, 084503 (2013) in
+  which it is shown that the Boris algorithm \emph{conserves
+    phase-space volume}. However, they also show that the Boris
+  algorithm is \emph{not} symplectic.
+  \begin{itemize}
+  \item The relativistic Boris algorithm does not properly compute the
+    $\mvec{E}\times\mvec{B}$ velocity. This can be corrected. For
+    example Vay, Phys. Plasmas, {\bf 15}, 056701 (2008). The Vay
+    algorithm however, breaks the phase-space volume preserving
+    property of the Boris algorithm.
+  \item Higuera and Cary, Phys. Plasmas, {\bf 24}, 052104 (2017)
+    showed how to compute the correct $\mvec{E}\times\mvec{B}$ drift
+    velocity and restore volume preserving property. Seems this is
+    probably the current-best algorithm for updating Lorentz
+    equations.
+  \item The saga for better particle push algorithms is not over! For
+    example, an active area of research is to discover good algorithms
+    for \emph{asymptotic} systems, for example, when gyroradius is
+    much smaller than gradient length-scales or gyrofrequency is much
+    higher than other time-scales in the system. Common in most
+    magnetized plasmas.
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \small%
+  Besides pushing particles in electromagnetic fields, we need to
+  compute these fields self-consistently from currents and charges by
+  solving Maxwell equations. First consider Maxwell equations in
+  vacuum:
+  \begin{align*}
+    \frac{\partial \mvec{B}}{\partial t} + \nabla\times\mvec{E} &= 0 \\
+    \epsilon_0\mu_0\frac{\partial \mvec{E}}{\partial t} -
+    \nabla\times\mvec{B} &= 0
+  \end{align*}
+  For these we have the conservation laws
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \mvec{E}\times\mvec{B}  \dtx &= 0 \\
+    \frac{d}{dt} \int_\Omega \left( \frac{\epsilon_0}{2} |\mvec{E}|^2 + \frac{1}{2\mu_0} |\mvec{B}|^2 \right) \dtx &= 0.
+  \end{align*}
+  Note these are \emph{global} conservation laws and one can instead
+  also write \emph{local} conservation laws that include momentum and
+  energy flux terms. How to solve these equations efficiently and
+  maintain (some) conservation and geometric properties?
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \begin{itemize}
+  \item Maxwell equations have a very special geometric structure. The
+    electric field $\mvec{E}$ is a \emph{vector} while the magnetic
+    field $\mvec{B}$ is a \emph{bivector} (this is disguised in the
+    usual formulations of Maxwell equations).
+  \item (In spacetime formulations the complete electromagnetic field
+    is represented as a single bivector in 4D space-time).
+  \item The fact that we are dealing with two objects of
+    \emph{different} geometric types indicates that the discrete
+    Maxwell equations should also inherit this somehow.
+  \item The Yee algorithm, often called the \emph{finite-difference
+      time-domain} algorithm is the most successful (and simple)
+    algorithm that accounts of this geometric structure. It is
+    implemented in most PIC codes, though recent research has focused
+    on structure preserving finite-element and other methods.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \begin{figure}
+    \incfig{Yee-cube.png}
+    \caption{Standard Yee-cell. Electric field components (vectors)
+      are located on edges while magnetic field components
+      (bivectors) are located on faces.}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \small%
+  On the Yee-cell the difference approximation to Maxwell equations
+  ``falls out'', almost like magic. The updates are staggered in time
+  and use two \emph{different} discrete curl operators:
+  \begin{align*}
+    \mvec{B}^{n+1/2} &= \mvec{B}^{n-1/2} - \Delta t\thinspace \nabla_E\times\mvec{E}^{n} \\    
+    \mvec{E}^{n+1} &= \mvec{E}^n + \Delta t/c^2\thinspace \nabla_F\times\mvec{B}^{n+1/2}
+  \end{align*}
+  Here the symbols $\nabla_F\times$ and $\nabla_E\times$ are the
+  discrete curl operators:
+  \begin{itemize}
+  \item The first takes \emph{face-centered} magnetic field and
+    computes it curl. This operator \emph{puts the result on cell
+      edges}.
+  \item The second takes \emph{edge-centered} electric field and
+    computes it curl. This operator \emph{puts the result on cell
+      faces}.
+  \item The structure of Yell-cell also indicates that \emph{currents}
+    must be co-located with the electric field and computed at half
+    time-steps.
+  \end{itemize}
+  This duality neatly reflects the underlying geometry of Maxwell
+  equations. The staggering in time reflects the fact that in 4D the
+  electromagnetic field is a bivector in spacetime.
+\end{frame}
+
+\begin{frame}{Divergence relations are exactly maintained}
+  \small%
+  We can show that the discrete Maxwell equations on a Yee-cell
+  maintain the divergence relations exactly:
+  \begin{align*}
+    \nabla_F\cdot\mvec{B}^{n+1/2} &= 0 \\
+    \nabla_E\cdot\mvec{E}^n &= 0.
+  \end{align*}
+  There is an additional constraint of Maxwell equations in a plasma,
+  that is, the current conservation:
+  \begin{align*}
+    \pfrac{\varrho_c}{t} + \nabla\cdot\mvec{J} = 0.
+  \end{align*}
+  where $\varrho_c$ is the charge density and $\mvec{J}$ is the
+  current density. On the Yell-cell this becomes
+  \begin{align*}
+    \frac{\varrho_c^{n+1}-\varrho_v^{n}}{\Delta t}
+    +
+    \nabla_E\cdot\mvec{J}^{n+1/2} = 0.    
+  \end{align*}
+  One must ensure that current from particles is computed carefully to
+  ensure that this expression is satified. See Esirkepov,
+  Comp. Phys. Communications, {\bf 135} 144-153 (2001).
+\end{frame}
+
+\begin{frame}{Other schemes: Finite-Volume method for Maxwell
+    equations}
+  \small
+  Consider the 1D source-free Maxwell equations
+  \begin{align*}
+    \frac{\partial }{\partial t}
+    \left[
+    \begin{matrix}
+      E_y \\
+      B_z
+    \end{matrix}
+    \right]
+    +
+    \frac{\partial }{\partial x}
+    \left[
+    \begin{matrix}
+      c^2B_z \\
+      E_y
+    \end{matrix}
+    \right]
+    =
+    0.
+  \end{align*}
+  Basic idea is to transform the equation into uncoupled advection
+  equations for the \emph{Riemann variables}. This is always possible
+  in 1D for \emph{linear hyperbolic} systems. For the above system,
+  multiply the second equation by $c$ and add and subtract from the
+  first equation to get
+  \begin{align*}
+    \frac{\partial }{\partial t}\left(E_y + c B_z\right) + c \frac{\partial }{\partial x}\left(E_y + c B_z\right) &= 0 \\
+    \frac{\partial }{\partial t}\left(E_y - c B_z\right) - c \frac{\partial }{\partial x}\left(E_y - c B_z\right) &= 0.
+  \end{align*}
+  Note that these are two uncoupled passive advection equations for
+  the variables $w^\pm = E_y \pm c B_z$ with advection speeds $\pm
+  c$.
+\end{frame}
+
+\begin{frame}{Finite-Volume method for Maxwell equations}
+  \small%
+  \begin{itemize}
+  \item Instead of using the Yee-cell one can solve Maxwell equations
+    using finite-volume methods developed in aerospace and fluid
+    mechanics.
+  \item In these schemes one uses the local characterstic direction to
+    ``upwind'' values at cell faces, adding stability to the scheme
+    when simulating small-scale features.
+  \item Finite-volume schemes are as cheap (or expensive) as Yell-cell
+    based FDTD schemes and are also easy to implement for Maxwell
+    equations. However, they suffer from some disadvantages.
+  \item First, it is very hard to ensure divergence relations are
+    maintained. One needs to correct the divergence errors somehow, by
+    adding some additional equations to the system.
+  \item Energy is not conserved by finite-volume schemes that use
+    upwinding. Special choices of basis-functions can be used to
+    construct energy conserving schemes, but these have other issues
+    (also shared by FDTD schemes).
+  \item However, in some situations, FV based Maxwell solvers are
+    useful and have been successfully applied in many large-scale
+    problems.
+  \end{itemize}
 \end{frame}  
+
+% ----------------------------------------------------------------  
+
+\begin{frame}{Choice of numerical fluxes for Maxwell equations impacts
+    energy conservation}
+
+  The electromagnetic energy is given by
+  \begin{align*}
+    \mathcal{E} = \frac{\epsilon_0}{2} E_y^2 + \frac{1}{2\mu_0} B_z^2
+  \end{align*}
+  Notice that this is the $L_2$ norm of the electromagnetic
+  field. 
+  \begin{itemize}
+  \item Hence, as we will show tomorrow, if we use upwinding to
+    compute numerical fluxes, the \emph{electromagnetic energy will
+      decay}.
+  \item If we use central fluxes (average left/right values) then the
+    EM energy will remain conserved by the \emph{time-continuous}
+    scheme. However, the Runge-Kutta time-stepping will add small
+    diffusion that will decay the total energy a little.
+  \item However, the energy decay rate will be \emph{independent} of
+    the spatial resolution and will reduce with smaller time-steps.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
 
 \end{document}
 
