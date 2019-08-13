@@ -209,6 +209,12 @@ Lecture 2: The Boris algorithm and FDTD and FV schemes for Maxwell equations
 
 `PDF of Lecture 2 slides <./_static/lec2.pdf>`_
 
+Code
+====
+
+See files `code/lec2/lorentz-boris.lua
+<https://bitbucket.org/ammarhakim/summer-school-cmpp/src/master/code/lec1/sho-fwd-euler.lua>`_
+
 Summary
 =======
 

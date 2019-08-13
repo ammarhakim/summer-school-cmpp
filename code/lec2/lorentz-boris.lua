@@ -6,14 +6,14 @@ charge = 1.0 -- particle charge
 mass = 1.0 -- particle mass
 Bmax = 1.0 -- estimate for maximum B field
 x0, y0, z0 = 1.0, 0.0, 0.0 -- initial position
-vx0, vy0, vz0 = 0.0, 1.0, 0.0 -- initial velocity
+vx0, vy0, vz0 = 0.0, 0.0, 0.0 -- initial velocity
 tEnd = 2*math.pi -- end-time for simulation
 cflFrac = 0.1 -- time-step fraction of CFL
 
 -- function to compute electromagentic field
 -- returns Ex, Ey, Ez, Bx, By, Bz
 function emField(t, x, y, z)
-   return 0.0, 0.0, 0.0, 0.0, 0.0, 1.0+x
+   return 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 end
 
 -- Simulation code: no need to modify
@@ -62,9 +62,9 @@ function borisPush(t, dt, q, m, ptcl)
    local vp_2 = vm_2 + cp_2
 
    -- half-step electric field update: this gives final particle velocity
-   ptcl.v[0] = vp_0 - qmdt*E_0
-   ptcl.v[1] = vp_1 - qmdt*E_1
-   ptcl.v[2] = vp_2 - qmdt*E_2
+   ptcl.v[0] = vp_0 + qmdt*E_0
+   ptcl.v[1] = vp_1 + qmdt*E_1
+   ptcl.v[2] = vp_2 + qmdt*E_2
 
    -- update particle position
    ptcl.x[0] = ptcl.x[0] + dt*ptcl.v[0]
