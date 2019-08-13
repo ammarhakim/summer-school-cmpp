@@ -1,0 +1,226 @@
+\documentclass[pdf]{beamer}
+\usepackage{hyperref}
+%% AMS packages and font files
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{caption}
+
+\captionsetup{font=scriptsize,labelfont=scriptsize}
+\footnotesize\small
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\newcommand{\eqr}[1]{Eq.\thinspace(#1)}
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pfracc}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pfraca}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\pfracb}[2]{\partial #1/\partial #2}
+\newcommand{\pfracbb}[2]{\partial^2 #1/\partial #2^2}
+\newcommand{\spfrac}[2]{{\partial_{#1}} {#2}}
+\newcommand{\mvec}[1]{\mathbf{#1}}
+\newcommand{\gvec}[1]{\boldsymbol{#1}}
+\newcommand{\script}[1]{\mathpzc{#1}}
+\newcommand{\eep}{\mvec{e}_\phi}
+\newcommand{\eer}{\mvec{e}_r}
+\newcommand{\eez}{\mvec{e}_z}
+\newcommand{\iprod}[2]{\langle{#1}\rangle_{#2}}
+%\newcommand{\mypause}{\pause}
+\newcommand{\mypause}{}
+\newcommand{\gcs}{\nabla_{\mvec{x}}}
+\newcommand{\gvs}{\nabla_{\mvec{v}}}
+\newcommand{\gps}{\nabla_{\mvec{z}}}
+\newcommand{\dtv}{\thinspace d^3\mvec{v}}
+\newcommand{\dtx}{\thinspace d^3\mvec{x}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{remark}{Remark}
+
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}
+%\newtheorem{thm}{Theorem}
+\newtheorem{proposed}{Proposed Answer}
+\DeclareMathOperator{\spn}{span}
+
+%% autoscaled figures
+\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+
+\usepackage{beamerthemesplit}
+\setbeamercovered{transparent}
+%\usetheme{lined}
+%\usetheme{CambridgeUS}
+%\usecolortheme{dolphin}
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{navigation symbols}{}
+
+% Setup TikZ
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+\title[{\tt }] {Computational Methods in Plasma Physics. Lecture II}%
+\author[http://cmpp.rtfd.io]%
+{Ammar H. Hakim\inst{1}}%
+
+\institute[PPPL]
+{ \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
+}
+
+\date[8/13/2019]{PPPL Graduate Summer School, 2019}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator}
+  We looked at
+  \begin{align*}
+    \frac{d^2z}{dt^2} = -\omega^2 z
+  \end{align*}
+  and wrote it as system of first-order ODEs
+  \begin{align*}
+    \frac{dz}{dt} = v; \quad \frac{dv}{dt} = -\omega^2 z
+  \end{align*}
+  Now introduce energy-angle coordinates
+  \begin{align*}
+    \omega z = E\sin\theta; \quad v = E\cos\theta
+  \end{align*}
+  then $E^2 = \omega^2 z^2 + v^2 \equiv E_0^2$ is a constant as we
+  showed before. Using these expressions we get the very simple ODE
+  $\dot{\theta} = \omega$. This shows that in phase-space
+  $(v,\omega z)$ the motion is with uniform angular speed along a
+  circle.
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator: Phase-errors}
+  \small%
+  The mid-point scheme had
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
+    = E_0^2
+  \end{align*}
+  which means that the mid-point scheme gets the energy coordinate
+  \emph{exactly} correct. However, we have
+  \begin{align*}
+    \tan\theta^{n+1} = \frac{\omega z^{n+1}}{v^{n+1}}.
+  \end{align*}
+  Using the expressions for the scheme and Taylor expanding in
+  $\Delta t$ we get
+  \begin{align*}
+    \tan\theta^{n+1}
+    =
+    \tan\theta^n +
+    \frac{\omega E_0^2}{(v^{n})^2}\Delta t +
+    \frac{\omega^3 z^n E_0^2}{(v^n)^3}\Delta t^2
+    + O(\Delta t^3)
+  \end{align*}
+  The first three terms match the Taylor expansion of the exact
+  solution $\tan(\theta^n+\omega\Delta t)$ and the last term is the
+  \emph{phase-error}.
+\end{frame}
+
+\begin{frame}{Single particle motion in an electromagnetic field}
+  \small%
+  \begin{itemize}
+  \item In PIC method the Vlasov-Maxwell equation is solved in the
+    \emph{Lagrangian frame}: the phase-space is represented by
+    \emph{finite-sized} ``macro-particles''.
+  \item In the Lagrangian frame the distribution
+    function remains constants along \emph{characteristics} in
+    phase-space.
+  \item These characteristics satisfy the ODE of particles moving
+    under Lorentz force law
+    \begin{align*}
+      \frac{d\mvec{x}}{dt} &= \mvec{v} \\
+      \frac{d\mvec{v}}{dt} &= \frac{q}{m}(\mvec{E}(\mvec{x},t) + \mvec{v}\times\mvec{B}(\mvec{x},t))
+    \end{align*}
+  \item In the absence of an electric field, the kinetic energy must
+    be conserved
+    \begin{align*}
+      \frac{1}{2} |\mvec{v}|^2 = \textrm{constant}.
+    \end{align*}
+    This is independent of the spatial or time dependence of the
+    magnetic field. Geometrically this means that in the absence of an
+    electric field the velocity vector rotates and its tip always lies
+    on a sphere.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Single particle motion in an electromagnetic field}
+  \small%
+  \begin{itemize}
+  \item A mid-point scheme for this equation system would look like
+    \begin{align*}
+    \frac{\mvec{x}^{n+1}-\mvec{x}^n}{\Delta t} &= \frac{\mvec{v}^{n+1}+\mvec{v}^n}{2} \\
+    \frac{\mvec{v}^{n+1}-\mvec{v}^n}{\Delta t} &= \frac{q}{m}
+      \big(
+        \overline{\mvec{E}}(\mvec{x},t) +
+        \frac{\mvec{v}^{n+1}+\mvec{v}^n}{2}\times\overline{\mvec{B}}(\mvec{x},t)
+      \big)
+    \end{align*}
+    The overbars indicate some averaged electric and magnetic fields
+    evaluated from the new and old positions. In general, this would
+    make the scheme nonlinear!
+
+  \item Instead, we will use a \emph{staggered} scheme in which the
+    position and velocity are staggered by half a time-step.
+    \begin{align*}
+    \frac{\mvec{x}^{n+1}-\mvec{x}^n}{\Delta t} &= \mvec{v}^{n+1/2} \\
+    \frac{\mvec{v}^{n+1/2}-\mvec{v}^{n-1/2}}{\Delta t} &= \frac{q}{m}
+      \big(
+        \mvec{E}(\mvec{x}^n,t^n) +
+        \frac{\mvec{v}^{n+1/2}+\mvec{v}^{n-1/2}}{2}\times\mvec{B}(\mvec{x}^n,t^n)
+      \big)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Boris algorithm for the staggered scheme}
+  \footnotesize%
+  The velocity update formula is
+  \begin{align*}
+    \frac{\mvec{v}^{n+1/2}-\mvec{v}^{n-1/2}}{\Delta t} &= \frac{q}{m}
+      \big(
+        \mvec{E}(\mvec{x}^n,t^n) +
+        \frac{\mvec{v}^{n+1/2}+\mvec{v}^{n-1/2}}{2}\times\mvec{B}(\mvec{x}^n,t^n)
+      \big)
+  \end{align*}
+  This appears like an implicit method: most obvious is to construct a
+  linear $3\times 3$ system of equations and invert them to determine
+  $\mvec{v}^{n+1}$. Puzzle to test your vector-identity foo: find
+  $\mvec{A}$ if $\mvec{A} = \mvec{R}+\mvec{A}\times\mvec{B}$.
+
+  The Boris algorithm updates this equation in three steps:
+  \begin{align*}
+    \mvec{v}^- &= \mvec{v}^{n-1/2} + \frac{q}{m}\mvec{E}^n\frac{\Delta t}{2} \\
+    \frac{\mvec{v}^+- \mvec{v}^-}{\Delta t}
+    &=
+      \frac{q}{2 m}(\mvec{v}^++\mvec{v}^-)\times\mvec{B}^n \\
+    \mvec{v}^{n+1/2}
+    &=
+      \mvec{v}^{+} + \frac{q}{m}\mvec{E}^n\frac{\Delta t}{2} \\    
+  \end{align*}
+  Convince yourself that this is indeed equivalent to the staggered
+  expression above. So we have two electric field updates with half
+  time-steps and a rotation due to the magnetic field. Once the
+  updated velocity is computed, we can trivially compute the updated
+  positions.
+\end{frame}  
+
+\end{document}
+
+
+\begin{frame}{}
+\end{frame}
+
+% ----------------------------------------------------------------

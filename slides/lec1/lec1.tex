@@ -249,7 +249,7 @@
   \small%
   Consider first the simple harmonic oscillator
   \begin{align*}
-    \frac{d^2z}{dt^2} = -\omega^2 z^2
+    \frac{d^2z}{dt^2} = -\omega^2 z
   \end{align*}
   This has exact solution $z = a\cos(\omega t) + b\sin(\omega t)$,
   where $a$ and $b$ are arbitrary constants. How to solve this
@@ -363,7 +363,7 @@
     \right].                        
   \end{align*}
   For this scheme $\det(J)=1$. So the mid-point scheme conserves
-  phase-space volume! Some tedious algebra also shows that
+  phase-space volume! Some algebra also shows that
   \begin{align*}
     (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
   \end{align*}
@@ -452,9 +452,9 @@
   
   \begin{itemize}
   \item The amplification factor for the forward Euler scheme in the
-    absence of damping is $1+\omega^2\Delta^2 > 1$, hence this scheme
-    is \emph{unconditionally unstable}.
-  \item The amplification factor for the forward Euler scheme in the
+    absence of damping is $1+\omega^2\Delta t^2 > 1$, hence this
+    scheme is \emph{unconditionally unstable}.
+  \item The amplification factor for the mid-point scheme in the
     absence of damping is exactly 1, showing that the mid-point scheme
     is \emph{unconditionally stable}, that is, one can take as large
     time-step one wants without the scheme ``blowing up''. Of course,

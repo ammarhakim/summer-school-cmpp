@@ -8,12 +8,12 @@ Bmax = 1.0 -- estimate for maximum B field
 x0, y0, z0 = 1.0, 0.0, 0.0 -- initial position
 vx0, vy0, vz0 = 0.0, 1.0, 0.0 -- initial velocity
 tEnd = 2*math.pi -- end-time for simulation
-cflFrac = 0.5 -- time-step fraction of CFL
+cflFrac = 0.1 -- time-step fraction of CFL
 
 -- function to compute electromagentic field
 -- returns Ex, Ey, Ez, Bx, By, Bz
 function emField(t, x, y, z)
-   return 0.0, 0.0, 0.0, 0.0, 0.0, 1.0
+   return 0.0, 0.0, 0.0, 0.0, 0.0, 1.0+x
 end
 
 -- Simulation code: no need to modify

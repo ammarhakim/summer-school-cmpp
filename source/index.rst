@@ -117,10 +117,10 @@ on how to get the code and the postprocessing tools needed. In brief:
 
     conda install -c gkyl postgkyl
 
-Lecture 1: Single Particle Motion and Ordinary Differential Equations
----------------------------------------------------------------------
+Lecture 1: Introduction and Specialized Ordinary Differential Equations Solvers
+-------------------------------------------------------------------------------
 
-`PDF of slides <./_static/lec1.pdf>`_
+`PDF of Lecture 1 slides <./_static/lec1.pdf>`_
 
 Code
 ====
@@ -203,6 +203,15 @@ plasma-physics yet, mainly as the Maxwell solvers used in PIC codes
 are mostly second-order anyway. However, it is possible that these
 very high-order methods are useful in orbit codes.
 
+
+Lecture 2: The Boris algorithm and FDTD and FV schemes for Maxwell equations
+----------------------------------------------------------------------------
+
+`PDF of Lecture 2 slides <./_static/lec2.pdf>`_
+
+Summary
+=======
+
 Particle-in-cell methods are based on pushing macro-particles. These
 represent the motion of characteristics in phase-space, along which
 the distribution function is conserved. The macro-particle
@@ -217,13 +226,15 @@ The most widely used method to solve this system of ODEs is the *Boris
 algorithm*. This is surprisingly good: it is a *second-order*,
 *time-centered* method that *conserves phase-space volume*. However,
 the error in phase-velocity (that is there is an error in time-period
-of orbits) accumulates *linearly*. See [Qin2013]_ for proofs that the
-Boris algorithm is *not* symplectic but conserves phase-space volume.
+of orbits) accumulates *linearly*, as we saw for the harmonic
+oscillator. See [Qin2013]_ for proofs that the Boris algorithm is
+*not* symplectic but conserves phase-space volume.
 
 A comprehensive review of structure preserving algorithms for use in
 plasma physics is provided by [Morrison2017]_. It has numerous
 references to the literature and should be consulted to develop a
 detailed understanding of such schemes.
+
 
 References
 ----------
@@ -233,10 +244,6 @@ References
   kinetic plasmas", *Journal of Computational Physics*, **353**,
   110–147. http://doi.org/10.1016/j.jcp.2017.10.009
 
-.. [Qin2013] Qin, H., Zhang, S., Xiao, J., Liu, J., Sun, Y., &
-   Tang, W. M. (2013). "Why is Boris algorithm so good?"  Physics of
-   Plasmas, **20** (8), 084503–5. http://doi.org/10.1063/1.4818428
-
 .. [CaryBrizard2009] Cary, J. R., &
    Brizard, A. J. (2009). "Hamiltonian theory of guiding-center
    motion". Reviews of Modern Physics, **81** (2),
@@ -244,10 +251,6 @@ References
 
 .. [DurranBook] Dale E. Durran, "Numerical Methods for Fluid
    Dynamics", Springer. Second Edition.   
-
-.. [Morrison2017] Morrison, P. J. (2017). Structure and
-   structure-preserving algorithms for plasma physics. Physics of
-   Plasmas, **24** (5), 055502–21. http://doi.org/10.1063/1.4982054
 
 .. [Abdulle2013] Abdulle, A., & Vilmart, G. (2013). "PIROCK: A
    swiss-knife partitioned implicit–explicit orthogonal Runge–Kutta
@@ -266,3 +269,12 @@ References
    accurate to machine precision over a billion orbits. Monthly
    Notices of the Royal Astronomical Society, 446(2),
    1424–1437. http://doi.org/10.1093/mnras/stu2164
+
+.. [Qin2013] Qin, H., Zhang, S., Xiao, J., Liu, J., Sun, Y., &
+   Tang, W. M. (2013). "Why is Boris algorithm so good?"  Physics of
+   Plasmas, **20** (8), 084503–5. http://doi.org/10.1063/1.4818428   
+   
+.. [Morrison2017] Morrison, P. J. (2017). Structure and
+   structure-preserving algorithms for plasma physics. Physics of
+   Plasmas, **24** (5), 055502–21. http://doi.org/10.1063/1.4982054
+   
