@@ -251,7 +251,7 @@ oscillator. See [Qin2013]_ for proofs that the Boris algorithm is
 *not* symplectic but conserves phase-space volume.
 
 The relativistic Boris algorithm does not compute the correct
-:math:`\mathbf{E}\times\math{B}` velocity. This can be corrected for
+:math:`\mathbf{E}\times\mathbf{B}` velocity. This can be corrected for
 and still maintain the volume-preserving property and was done in
 [HigueraCary2017]_.
 
