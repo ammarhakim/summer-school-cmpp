@@ -215,6 +215,13 @@ Code
 See files `code/lec2/lorentz-boris.lua
 <https://bitbucket.org/ammarhakim/summer-school-cmpp/src/master/code/lec2/lorentz-boris.lua>`_
 
+You can play with this file to do various static or time-dependent
+electromagnetic fields. For example, motion in a constant magnetic
+field, in a field with a gradient, and in a driven sytem. See field
+specification in `this write up
+<http://ammar-hakim.org/sj/je/je32/je32-vlasov-test-ptcl.html>`_ for
+both non-resonant and resonant drivers.
+
 Summary
 =======
 

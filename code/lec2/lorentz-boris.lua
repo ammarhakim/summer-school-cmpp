@@ -6,15 +6,32 @@ charge = 1.0 -- particle charge
 mass = 1.0 -- particle mass
 Bmax = 1.0 -- estimate for maximum B field
 x0, y0, z0 = 1.0, 0.0, 0.0 -- initial position
-vx0, vy0, vz0 = 0.0, 0.0, 0.0 -- initial velocity
-tEnd = 2*math.pi -- end-time for simulation
-cflFrac = 0.1 -- time-step fraction of CFL
+vx0, vy0, vz0 = 0.0, 1.0, 0.1 -- initial velocity
+tEnd = 6*math.pi -- end-time for simulation
+cflFrac = 0.5 -- time-step fraction of CFL
 
 -- function to compute electromagentic field
 -- returns Ex, Ey, Ez, Bx, By, Bz
-function emField(t, x, y, z)
-   return 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+
+function emFieldConstant(t, x, y, z)
+   return 0.0, 0.0, 0.0, 0.0, 0.0, 1.0
 end
+
+function emFieldDriven(t, x, y, z)
+   local omega = 0.5
+   local B0 = 1.0
+   local Ex = 1.0*math.cos(omega*t)
+   return Ex, 0.0, 0.0, 0.0, 0.0, B0
+end
+
+function emSpiralField(t, x, y, z)
+   local Bz = math.sqrt(x^2+y^2)
+   local Ex = 1e-1*x/(x^2+y^2)^1.5
+   local Ey = 1e-1*y/(x^2+y^2)^1.5
+   return Ex, Ey, 0.0, 0.0, 0.0, Bz
+end
+
+emField = emFieldConstant
 
 -- Simulation code: no need to modify
 
@@ -77,6 +94,12 @@ function appendData(fld, t, z1, z2, z3)
    fld:appendData(t, {z1, z2, z3})
 end
 
+local ptclEnergy = DataStruct.DynVector { numComponents = 1 }
+function appendEnergy(t, ptcl)
+   local ke = 0.5*(ptcl.v[0]^2+ptcl.v[1]^2+ptcl.v[2]^2)
+   ptclEnergy:appendData(t, { ke })
+end
+
 -- stores particle position and velocity
 local ptclPosition = DataStruct.DynVector { numComponents = 3 }
 local ptclVelocity = DataStruct.DynVector { numComponents = 3 }
@@ -92,6 +115,7 @@ ptcl.v[0], ptcl.v[1], ptcl.v[2] = vx0, vy0, vz0
 
 appendData(ptclPosition, 0.0, ptcl.x[0], ptcl.x[1], ptcl.x[2])
 appendData(ptclVelocity, 0.0, ptcl.v[0], ptcl.v[1], ptcl.v[2])
+appendEnergy(0.0, ptcl)
 
 -- main loop
 isDone = false
@@ -108,9 +132,11 @@ while not isDone do
    -- store solution
    appendData(ptclPosition, tCurr+dt, ptcl.x[0], ptcl.x[1], ptcl.x[2])
    appendData(ptclVelocity, tCurr+dt, ptcl.v[0], ptcl.v[1], ptcl.v[2])
+   appendEnergy(tCurr+dt, ptcl)
 
    tCurr = tCurr+dt
 end
 
 ptclPosition:write("ptclPosition.bp")
 ptclVelocity:write("ptclVelocity.bp")
+ptclEnergy:write("ptclEnergy.bp")
