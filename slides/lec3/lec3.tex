@@ -1,0 +1,91 @@
+\documentclass[pdf]{beamer}
+\usepackage{hyperref}
+%% AMS packages and font files
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{caption}
+
+\captionsetup{font=scriptsize,labelfont=scriptsize}
+\footnotesize\small
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\newcommand{\eqr}[1]{Eq.\thinspace(#1)}
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pfracc}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pfraca}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\pfracb}[2]{\partial #1/\partial #2}
+\newcommand{\pfracbb}[2]{\partial^2 #1/\partial #2^2}
+\newcommand{\spfrac}[2]{{\partial_{#1}} {#2}}
+\newcommand{\mvec}[1]{\mathbf{#1}}
+\newcommand{\gvec}[1]{\boldsymbol{#1}}
+\newcommand{\script}[1]{\mathpzc{#1}}
+\newcommand{\eep}{\mvec{e}_\phi}
+\newcommand{\eer}{\mvec{e}_r}
+\newcommand{\eez}{\mvec{e}_z}
+\newcommand{\iprod}[2]{\langle{#1}\rangle_{#2}}
+%\newcommand{\mypause}{\pause}
+\newcommand{\mypause}{}
+\newcommand{\gcs}{\nabla_{\mvec{x}}}
+\newcommand{\gvs}{\nabla_{\mvec{v}}}
+\newcommand{\gps}{\nabla_{\mvec{z}}}
+\newcommand{\dtv}{\thinspace d^3\mvec{v}}
+\newcommand{\dtx}{\thinspace d^3\mvec{x}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{remark}{Remark}
+
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}
+%\newtheorem{thm}{Theorem}
+\newtheorem{proposed}{Proposed Answer}
+\DeclareMathOperator{\spn}{span}
+
+%% autoscaled figures
+\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+
+\usepackage{beamerthemesplit}
+\setbeamercovered{transparent}
+%\usetheme{lined}
+%\usetheme{CambridgeUS}
+%\usecolortheme{dolphin}
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{navigation symbols}{}
+
+% Setup TikZ
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+\title[{\tt }] {Computational Methods in Plasma Physics. Lecture III}%
+\author[http://cmpp.rtfd.io]%
+{Ammar H. Hakim\inst{1}}%
+
+\institute[PPPL]
+{ \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
+}
+
+\date[8/14/2019]{PPPL Graduate Summer School, 2019}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\end{document}
+
+
+\begin{frame}{}
+\end{frame}
+
+% ----------------------------------------------------------------

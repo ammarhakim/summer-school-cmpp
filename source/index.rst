@@ -279,7 +279,155 @@ plasma physics is provided by [Morrison2017]_. It has numerous
 references to the literature and should be consulted to develop a
 detailed understanding of such schemes.
 
+Lecture 3: The cutting-edge of computational plasma physics research
+--------------------------------------------------------------------
 
+The Big Picture
+===============
+
+Originally, I had intended to spend time talking about fluid solvers
+in this lecture. However, based on the extensive questions in the
+last lecture I decided the time would be better spent in looking at a
+few big-picture issues. We will return to numerics in Lecture 4.
+
+In particular:
+
+- What are the cutting-edge research questions in computational plasma
+  physics?
+
+- What is the relationship between modern numerical methods and
+  experiments and observations? (That is, why care about this stuff in
+  the first place? Can simulations *predict* rather than *postdict*?)
+
+- How to incorporate "real-world" effects into simulations? (For
+  example, boundary conditions, atomic physics, etc)
+
+
+One can look at computational physics in two ways: as an end in
+itself, and as a tool for applications. Both of these are important!
+
+As an end in itself:
+
+- The first sits between applied mathematics and theoretical
+  physics. The goal is to design efficient numerical methods to solve
+  equations from theoretical physics.
+
+- The goal here is the numerical method itself: what are its
+  properties? Does it faithfully represent the underlying physics?
+  Does it run efficiently on modern computers? Research into modern
+  numerical methods (including structure preserving methods) fall into
+  this category.
+
+- Usually, besides the fun of solving complex equations (and writing
+  code), the goal is to gain deeper understanding of underlying
+  physics. **Some theoretical questions can only be answered with
+  computer simulations.**
+
+- This is a perfectly legitimate research area even if no connection
+  to experiments is made, but only satisfies the curiosity of the
+  researchers and helps one gain a better understanding of the
+  physics.
+
+
+As a tool for applications:
+
+- The second is to look at the computational physics as providing
+  tools to understand/design experiments or observations.
+
+- Note that a large number of routine calculations are needed to build
+  modern experiments (heat-transfer, structural analysis, basic fluid
+  mechanics, equilibrium and stability calculations, etc). **Such
+  routine calculations are no longer cutting edge research topics**.
+
+At the intersection of cutting-edge computational physics and modern
+plasma physics is a set of **Billion Dollar Questions**. (In general,
+one should not put currency values to such things).
+
+These **Billion Dollar Questions** need huge investments in
+experimental and observational programs as well as the very latest in
+computational physics research.
+
+Space Physics Examples: Parker Solar Probe
+
+- `Paker Solar Probe
+  <https://www.nasa.gov/content/goddard/parker-solar-probe>`_. "The
+  primary science goals for the mission are to **trace how energy and
+  heat move through the solar corona** and to explore **what
+  accelerates the solar wind** as well as **solar energetic
+  particles**."
+
+- The Probe will collect detailed measurements of electric and
+  magnetic fields as well as detailed distribution functions of
+  particles.
+
+- The solar wind plasma is nearly collisionless. It is likely that a
+  proper understanding of kinetic physics (at the level of the
+  Vlasov-Maxwell equations) will be needed to fully understand the
+  physical processes.
+
+- Cutting-edge simulations will be critcial to this. Serious research
+  into numerics of Vlasov-Maxwell needs to be done and very large
+  simulations need to be run.
+
+Many other missions are active and planned: `BepColombo
+<https://en.wikipedia.org/wiki/BepiColombo>`_ to Mercury; `Juno
+<https://en.wikipedia.org/wiki/Juno_(spacecraft)>`_ to Jupiter.
+
+- Much of the deep understanding of plasma processes in solar system
+  planets (magnetospheres, ionosphere) can only be gained from
+  detailed modeling: kinetic modelling is likely impossible. **How to
+  incorporate some kinetic effects into fluid models?**
+
+Fusion Physics Examples: Building a working thermonuclear fusion reactor.
+
+- The `Iter project <https://www.iter.org>`_ aims to build the world's
+  largest tokamak, a "magnetic bottle" to contain super-hot plasma and
+  heat it to ignition temperatures.
+
+There are other major fusion efforts around the world:
+
+- `Beautiful stellarators <https://www.ipp.mpg.de/w7x>`_ (and `Wiki
+  article <https://en.wikipedia.org/wiki/Wendelstein_7-X>`_) that may
+  have better properties than tokamaks and provide a faster route to
+  fusion energy
+
+- `High-field based compact tokamaks
+  <https://www.psfc.mit.edu/sparc>`_; `field-reversed configurations
+  <https://tae.com>`_; spinning magnetic mirror machines; etc
+
+
+There are major unsolved problems in the basic physics of fusion
+machines. Most of these can only be answered by large-scale computing
+and much of the numerical tools have not yet been fully developed.
+
+The `Scientific Discovery through Advanced Computing
+<https://www.scidac.org/partnerships/fusion-energy.html>`_ program in
+fusion has large projects that address the very serious **Billion
+Dollar Question**: will controlled fusion be eventually possible?
+
+- The numerics research here is focussed on gyrokinetic and even full
+  kinetic understanding of fundamental turbulence and transport
+  processes in the tokamak. **These equations are very difficult to
+  solve!**
+
+- Disruptions are dangerous processes that can "kill" certain fusion
+  machine: large-scale MHD simulations are needed. Significant new
+  research is being done in new numerical methods and application of
+  existing MHD codes to such problems.
+
+- Runaway electrons (relativistic high-energy electron beams) can
+  drill holes in fusion machines. See `SCREAM project
+  <https://scream.pppl.gov>`_ and `special PPCF issue
+  <https://iopscience.iop.org/journal/0741-3335/page/Special-Issue-on-Runaway-Electrons>`_.
+
+- Very serious! **Will need huge kinetic calculations**. Also, the
+  formulation of self-consistent coupling betwen the runaway electrons
+  and MHD is not complete. See review by [Boozer2015]_.
+
+These are only selection of problems I am directly familiar with. I
+hope it gives you a flavor and understanding why computational plasma
+physics is such a serious and important field!
+  
 References
 ----------
 
@@ -338,3 +486,7 @@ References
    structure-preserving algorithms for plasma physics. Physics of
    Plasmas, **24** (5), 055502–21. http://doi.org/10.1063/1.4982054
    
+.. [Boozer2015] Boozer, A. H. (2015). "Theory of runaway electrons in
+   ITER: Equations, important parameters, and implications for
+   mitigation". Physics of Plasmas, **22** (3),
+   032504–18. http://doi.org/10.1063/1.4913582
