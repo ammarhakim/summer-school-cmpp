@@ -1,0 +1,21 @@
+load("modal-basis")$
+load("basis-precalc/basisSer1x")$
+assume(dx>0)$
+
+gInfo : [0,-1,1]$
+bCC : basisC[2]$
+
+calcInnerProdListDisco(vars, funcList, dInfo)
+:= calcInnerProdListGen(vars, [[-1,dInfo[1]]], 1, funcList, dInfo[2]) + calcInnerProdListGen(vars, [[dInfo[1],1]], 1, funcList, dInfo[3])$
+
+gh : calcInnerProdListDisco([x], bCC, gInfo)$
+draw2d(
+  grid=true,
+  color=black, explicit(gh.bCC, x, -1, 1),
+  color=blue, line_type=dots, explicit(gInfo[2], x, -1, gInfo[1]),
+  color=blue, line_type=dots, explicit(gInfo[3], x, gInfo[1],1)
+  )$
+  
+
+
+

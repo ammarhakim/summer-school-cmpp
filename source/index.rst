@@ -369,7 +369,7 @@ Space Physics Examples: Parker Solar Probe
   into numerics of Vlasov-Maxwell needs to be done and very large
   simulations need to be run.
 
-Many other missions are active and planned: `BepColombo
+Many other missions are active and planned: `BepiColombo
 <https://en.wikipedia.org/wiki/BepiColombo>`_ to Mercury; `Juno
 <https://en.wikipedia.org/wiki/Juno_(spacecraft)>`_ to Jupiter.
 
@@ -428,6 +428,12 @@ Dollar Question**: will controlled fusion be eventually possible?
 These are only selection of problems I am directly familiar with. I
 hope it gives you a flavor and understanding why computational plasma
 physics is such a serious and important field!
+
+Lecture 4: Discontinuous Galerkin Schemes
+-----------------------------------------
+
+`PDF of Lecture 4 slides <./_static/lec4.pdf>`_.
+
   
 References
 ----------

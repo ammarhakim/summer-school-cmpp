@@ -1,0 +1,63 @@
+load("modal-basis")$
+load("basis-precalc/basisSer1x")$
+assume(dx>0)$
+
+eta(xc,dx,b) := subst(z=x,
+  subst(x=(z-xc)/(dx/2), b))$
+
+bCC : basisC[1]$  [1/sqrt(2)]$    [1/sqrt(2)]$  
+
+/* Basis function in three cells: L,I,R */
+bCL : eta(-dx,dx,bCC)$
+bCI : eta(0,dx,bCC)$
+bCR : eta(dx,dx,bCC)$
+
+/* dsin is a "discrete" sin */
+dsin(x,n) := sum((-1)^(i-1)*x^(2*i-1)/factorial(2*i-1), i, 1, n)$
+
+g :  dsin((x-1/2),20)$ /* 1-(x-1/2)^2 */
+g :  x^4 + sin(5*x)$ /* 1-(x-1/2)^2 */
+
+projectOnCell(xc, dx, g) := block([bcI, gI],
+  bcI : eta(xc,dx,bCC),
+  gI : calcInnerProdListGen([x], [[xc-dx/2,xc+dx/2]], 1, bcI, g)*2/dx,
+  return (gI)
+  )$
+
+/* Function to plot reconstruction */
+plotRecon1Cell(g,dx) := block([bcI, gList, geList],
+  gList : projectOnCell(0, dx, g),
+  bcI : eta(0, dx, bCC),
+  geList : explicit(gList.bcI, x, -dx/2, dx/2),
+  ge : explicit(g, x, -dx/2, dx/2),
+  draw2d(
+    grid=true,
+    color=black,geList,
+    color=blue,line_type=dots,ge    
+    )
+  )$
+plotRecon1Cell(3+(x-1/2)^4+2*x^3-5*x^2, 2)$
+
+/* Function to plot reconstruction */
+plotRecon(g,dx) := block([bcI, gList, geList],
+  gList : [],
+  geList : [],  
+  for i : 1 thru 5 do (
+    gList : endcons(projectOnCell(-2*dx+(i-1)*dx , dx, g), gList)
+    ),
+  for i : 1 thru 5 do (
+    bcI : eta(-2*dx+(i-1)*dx, dx, bCC),
+    geList : endcons(explicit(gList[i].bcI, x, -5*dx/2+(i-1)*dx, -5*dx/2+i*dx), geList)
+    ),
+  ge : explicit(g, x, -5*dx/2, 5*dx/2),
+  draw2d(
+    grid=true,
+    color=black,geList[1],
+    color=black,geList[2],
+    color=black,geList[3],
+    color=black,geList[4],
+    color=black,geList[5],    
+    color=blue,line_type=dots,ge    
+    )
+  )$
+plotRecon(x^4 + sin(5*x), 2/5)$

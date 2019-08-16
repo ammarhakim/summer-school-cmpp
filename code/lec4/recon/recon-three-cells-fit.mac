@@ -1,0 +1,79 @@
+load("modal-basis")$
+load("basis-precalc/basisSer1x")$
+assume(dx>0)$
+
+eta(xc,dx,b) := subst(z=x,
+  subst(x=(z-xc)/(dx/2), b))$
+
+/* Flags to indicate what we are matching (one can match both) */
+matchSlope : true $
+matchValue : true $
+
+/* Reconstruction across two cells of size dx each */
+bCC : basisC[1]$ [1/sqrt(2)]$
+
+pL : eta(-dx/2,dx,bCC)$
+pR : eta(dx/2,dx,bCC)$
+
+N : length(bCC)$
+h : doExpand1(hn, makelist(x^i,i,0,2*N-1))$
+eqL : calcInnerProdListGen([x], [[-dx,0]], 1, pL, h-doExpand(hL,pL))$
+eqR : calcInnerProdListGen([x], [[0,dx]],  1, pR, h-doExpand(hR,pR))$
+eqList : append(eqL,eqR)$
+hsol : linsolve(eqList, makelist(hn[i], i, 0, 2*N-1))$
+h1d : fullratsimp(subst(hsol, h))$
+
+/* Three-cell reconstruction: match slope and moments */
+bC : eta(0, dx, bCC)$
+fh : sum(f(j,i)*bC[i], i, 1, N)$
+
+/* Derivative and value of h at interface */
+dh : subst(x=0,diff(h1d,x))$
+vh : subst(x=0,h1d)$
+
+subListR : append(
+  makelist(hL[i]=f(j,i), i, 1,N), makelist(hR[i]=f(j+1,i), i, 1,N)
+  )$
+subListL : append(
+  makelist(hL[i]=f(j-1,i), i, 1,N), makelist(hR[i]=f(j,i), i, 1,N)
+  )$
+
+/* Slope on right/left cell edge */
+dhR : subst(subListR, dh)$
+dhL : subst(subListL, dh)$
+/* Values on right/left cell edge */
+vhR : subst(subListR, vh)$
+vhL : subst(subListL, vh)$
+
+/* Reconstruct in the middle cell */
+maxReconOrder : N-1$
+if matchSlope then maxReconOrder : maxReconOrder+2$
+if matchValue then maxReconOrder : maxReconOrder+2$
+
+rh : sum(r[i]*x^i, i, 0, maxReconOrder)$
+
+/* Construct list of equations to match */
+eqList : []$
+if matchSlope then eqList : append(
+  [ dhR = subst(x=dx/2,diff(rh,x)), dhL = subst(x=-dx/2,diff(rh,x)) ],
+  eqList)$
+if matchValue then eqList : append(
+  [ vhR = subst(x=dx/2,rh), vhL = subst(x=-dx/2,rh) ],
+  eqList)$
+eqList : append(eqList,
+  calcInnerProdListGen([x], [[-dx/2,dx/2]], 1, bC, rh-fh))$
+
+/* Solve system and construct expansion */
+rsol : linsolve(eqList, makelist(r[i],i,0,maxReconOrder))$
+r1d : subst(rsol, rh)$
+
+substList : append(
+  makelist(f(j-1,i)=fL[i-1], i,1,length(bCC)),
+  makelist(f(j,i)=fI[i-1], i,1,length(bCC)),
+  makelist(f(j+1,i)=fR[i-1], i,1,length(bCC))
+  )$
+
+expr : subst(substList, r1d)$
+fh : openw("~/max-out/fit")$
+printf(fh, "~a ~%", float(expand(expr)))$
+close(fh)$
