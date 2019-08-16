@@ -375,8 +375,9 @@ Many other missions are active and planned: `BepColombo
 
 - Much of the deep understanding of plasma processes in solar system
   planets (magnetospheres, ionosphere) can only be gained from
-  detailed modeling: kinetic modelling is likely impossible. **How to
-  incorporate some kinetic effects into fluid models?**
+  detailed modeling: global kinetic modelling is likely
+  impossible. **How to incorporate some kinetic effects into fluid
+  models?**
 
 Fusion Physics Examples: Building a working thermonuclear fusion reactor.
 
