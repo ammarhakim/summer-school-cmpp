@@ -10,7 +10,7 @@ matchSlope : true $
 matchValue : true $
 
 /* Reconstruction across two cells of size dx each */
-bCC : basisC[2]$  [1/sqrt(2)]$ 
+bCC :  basisC[2]$ [1/sqrt(2)]$ 
 
 pL : eta(-dx/2,dx,bCC)$
 pR : eta(dx/2,dx,bCC)$

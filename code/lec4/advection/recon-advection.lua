@@ -12,10 +12,10 @@ local Basis = require "Basis"
 local Updater = require "Updater"
 
 -- Simulation parameters
-polyOrder = 1 -- polynomial order
+polyOrder = 2 -- polynomial order
 cfl = 0.5/(2*polyOrder+1) -- CFL number
-nCell = 12
-tEnd = 2*math.pi
+nCell = 8
+tEnd = 2*math.pi*100
 
 ----------------------
 -- Grids and fields --
