@@ -98,9 +98,8 @@ Bitbucket repo for lectures and code
 ------------------------------------
 
 You can get all the tex files for the slides, source for this website
-and the code I ran in class by cloning the `Bitbucket repo
-<https://bitbucket.org/ammarhakim/summer-school-cmpp/>`_ for this
-class.
+and the code I ran in class by cloning the `Github repo
+<https://github.com/ammarhakim/summer-school-cmpp>`_ for this class.
 
 To run the code you need to install the Gkeyll software. Please see
 the `Gkeyll website <http://gkeyll.readthedocs.io>`_ for instructions
@@ -282,6 +281,12 @@ detailed understanding of such schemes.
 Lecture 3: The cutting-edge of computational plasma physics research
 --------------------------------------------------------------------
 
+I showed slides from Eric Shi's thesis defense. Please see `his thesis
+<https://arxiv.org/abs/1708.07283>`_ for full details on the
+gyrokinetic algorithm, validation with LAPD and also first results
+from simulating the NSTX scrap-off-layer plasma.
+
+
 The Big Picture
 ===============
 
@@ -434,6 +439,37 @@ Lecture 4: Discontinuous Galerkin Schemes
 
 `PDF of Lecture 4 slides <./_static/lec4.pdf>`_.
 
+Summary
+=======
+
+The discontinuous Galerkin method is a type of finite-element scheme
+in which the solution across cell boundaries can be discontinuous. The
+method was originally invented for elliptic equations by Nitsche in
+1971 (paper is in German). However, the key paper on application to a
+hyperbolic PDE was written by Reed and Hill in 1973. The latter paper
+has more than 2100 citations. A later key paper on extension of the
+method to nonlinear systems of equations was by Cockburn and Shu
+(JCP **41**, 199-224 1998).
+
+The key ingredient of DG is Galerkin minimization on a
+finite-dimensional *discontinuous* space. This space is usually
+piecewise continuous polynomials, but could be other types of
+functions too.
+
+I introduced the idea of weak-equality, which is central to a proper
+understanding of the DG scheme. This weak-equality concept, and idea
+of recovery built from it, can be used to construct schemes for both
+advection and diffusion equation that is higher-order accurate than
+standard DG in smooth regions. Some form of limited recovery is needed
+when the solution is not smooth.
+
+One can solve the full Vlasov-Maxwell equations using DG. See
+[Juno2019]_ for example. The scheme described there conserves energy
+exactly, but does not conserve momentum. This is a typical feature of
+solvers for Vlasov equations: one can *either* conserve momentum or
+energy but not both. The construction of a momentum *and* energy
+conserving scheme remains an ongoing research problem.
+
   
 References
 ----------
@@ -497,3 +533,5 @@ References
    ITER: Equations, important parameters, and implications for
    mitigation". Physics of Plasmas, **22** (3),
    032504–18. http://doi.org/10.1063/1.4913582
+
+   
