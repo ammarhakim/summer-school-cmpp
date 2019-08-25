@@ -94,8 +94,8 @@ literature for solvers for ordinary differential equations (ODEs) and
 partial differential equations (PDEs), with emphasis of those
 techniques that are useful in plasma physics.
 
-Bitbucket repo for lectures and code
-------------------------------------
+Github repo for lectures and code
+---------------------------------
 
 You can get all the tex files for the slides, source for this website
 and the code I ran in class by cloning the `Github repo
