@@ -1,0 +1,488 @@
+\documentclass[pdf]{beamer}
+\usepackage{hyperref}
+%% AMS packages and font files
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{caption}
+
+\captionsetup{font=scriptsize,labelfont=scriptsize}
+\footnotesize\small
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\newcommand{\eqr}[1]{Eq.\thinspace(#1)}
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pfracc}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pfraca}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\pfracb}[2]{\partial #1/\partial #2}
+\newcommand{\pfracbb}[2]{\partial^2 #1/\partial #2^2}
+\newcommand{\spfrac}[2]{{\partial_{#1}} {#2}}
+\newcommand{\mvec}[1]{\mathbf{#1}}
+\newcommand{\gvec}[1]{\boldsymbol{#1}}
+\newcommand{\script}[1]{\mathpzc{#1}}
+\newcommand{\eep}{\mvec{e}_\phi}
+\newcommand{\eer}{\mvec{e}_r}
+\newcommand{\eez}{\mvec{e}_z}
+\newcommand{\iprod}[2]{\langle{#1}\rangle_{#2}}
+%\newcommand{\mypause}{\pause}
+\newcommand{\mypause}{}
+\newcommand{\gcs}{\nabla_{\mvec{x}}}
+\newcommand{\gvs}{\nabla_{\mvec{v}}}
+\newcommand{\gps}{\nabla_{\mvec{z}}}
+\newcommand{\dtv}{\thinspace d^3\mvec{v}}
+\newcommand{\dtx}{\thinspace d^3\mvec{x}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{remark}{Remark}
+
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}
+%\newtheorem{thm}{Theorem}
+\newtheorem{proposed}{Proposed Answer}
+\DeclareMathOperator{\spn}{span}
+
+%% autoscaled figures
+\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+
+\usepackage{beamerthemesplit}
+\setbeamercovered{transparent}
+%\usetheme{lined}
+%\usetheme{CambridgeUS}
+%\usecolortheme{dolphin}
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{navigation symbols}{}
+
+% Setup TikZ
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+\title[{\tt }] {Computational Methods in Plasma Physics. Lecture I}%
+\author[http://cmpp.rtfd.io]%
+{Ammar H. Hakim\inst{1}}%
+
+\institute[PPPL]
+{ \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
+}
+
+\date[8/10/2020]{PPPL Graduate Summer School, 2020}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Goal: Modern Computational Techniques for Plasma Physics}
+  \footnotesize Vast majority of plasma physics in contained in the
+  Vlasov-Maxwell equations that describe self-consistent evolution of
+  distribution function $f(\mvec{x},\mvec{v},t)$ and electromagnetic
+  fields:
+  \begin{align*}
+    \pfrac{f_s}{t} + \gcs\cdot (\mvec{v} f_s) + \gvs\cdot (\mvec{F}_s
+    f_s) = \left( \pfrac{f_s}{t} \right)_c
+  \end{align*}
+  where $\mvec{F}_s=q_s/m_s (\mvec{E}+\mvec{v}\times\mvec{B})$. The EM
+  fields are determined from Maxwell equations
+  \begin{align*}
+    \frac{\partial \mvec{B}}{\partial t} + \nabla\times\mvec{E} &= 0 \\
+    \epsilon_0\mu_0\frac{\partial \mvec{E}}{\partial t} -
+    \nabla\times\mvec{B} &= -\mu_0\sum_s q_s \int_{-\infty}^\infty v f_s \thinspace d\mvec{v}^3
+  \end{align*}
+  Highly nonlinear: fields tell particles how to move. Particle motion
+  generates fields. This is a very difficult system of equations to
+  solve! Theoretical and computational plasma physics consists of
+  making approximations and solving these equations in specific
+  situations.
+\end{frame}
+
+\begin{frame}{Why is solving Vlasov-Maxwell equations directly so
+    hard?}
+  Despite being the fundamental equation in plasma physics the VM
+  equations remain highly challenging to solve.
+  \begin{itemize}
+  \item Highly nonlinear with the coupling between fields and
+    particles via currents and Lorentz force. Collisions can further
+    complicate things due to long-range forces in a plasma; dominated
+    by small-angle collisions
+  \item High dimensionality and multiple species with large mass
+    ratios: 6D phase-space, $m_e/m_p = 1/1836$ and possibly dozens of
+    species.
+  \item Enormous scales in the system: light speed and electron plasma
+    oscillations; cyclotron motion of electrons and ions; fluid-like
+    evolution on intermediate scales; resistive slow evolution of
+    near-equilibrium states; transport scale evolution in tokamak
+    discharges.  14 orders of magnitude of physics in these
+    equations!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Many approximations developed over the decades}
+  \small%
+  Modern computational plasma physics consists of making justified
+  approximations to the VM system and then coming up with efficient
+  schemes to solve them.
+  \begin{itemize}
+  \item Major recent theoretical development in plasma physics is the
+    discovery of gyrokinetic equations, an asymptotic approximation
+    for plasmas in strong magnetic fields. Reduces dimensionality to
+    5D (from 6D) and eliminates cyclotron frequency and gyroradius
+    from the system. Very active area of research.
+  \item Many fluid approximations have been developed to treat plasma
+    via low-order moments: extended MHD models; multimoment models;
+    various reduced MHD equations
+  \item Numerical methods for these equations have undergone
+    renaissance in recent years: emphasis on \emph{memetic} schemes
+    that preserve conservation laws and some geometric features of the
+    continuous equations. Based on Lagrangian and Hamiltonian
+    formulation of basic equations. Very active area of research.
+  \end{itemize}
+  With advent of large scale computing much research is now focused on
+  schemes that scale well on thousands (millions) of CPU/GPU cores.
+\end{frame}
+
+\begin{frame}{Goal of this course is to look at some key schemes and
+    study their properties}
+  \small%
+  Computational plasma physics is vast: we can only cover a (very)
+  small fraction of interesting methods. In this class we will focus
+  on
+  \begin{itemize}
+  \item Solving the Vlasov-Maxwell equations using particles, the
+    ``Particle-in-cell'' method; methods to solve Maxwell
+    equations. This is probably the most widely used method that
+    yields reasonable results for many kinetic problems
+  \item Shock-capturing methods for plasma fluid equations. These are
+    particularly relevant to astrophysical problems in which flows can
+    be supersonic or super-Alfvenic. A brief look at fluid solvers for
+    use in fusion machines (tokamaks, stellarators) in which dynamics
+    is much slower.
+  \item Directly discretizing the Vlasov-Maxwell equations as a PDE in
+    5D/6D. This is an emerging area of active research and may open up
+    study of turbulence in fusion machines and also exploring
+    fundamental plasma physics in phase-space.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Conservation properties of Vlasov-Maxwell equations}
+  \small%
+  It is important to design methods that preserve at least some
+  properties of continuous Vlasov-Maxwell system. Define the moment
+  operator for any function $\varphi(\mvec{v})$ as
+  \begin{align*}
+    \langle \varphi(\mvec{v}) \rangle_s
+    \equiv
+    \int_{-\infty}^{\infty} \varphi(\mvec{v}) f_s(t,\mvec{x},\mvec{v}) \dtv.
+    \label{eq:momentDefinition}
+  \end{align*}
+  The Vlasov-Maxwell system conserves particles:
+  \begin{align*}
+    \frac{d}{dt}\int_\Omega \sum_s \langle 1 \rangle_s \dtx = 0.
+  \end{align*}
+  The Vlasov-Maxwell system conserves total (particles plus field)
+  momentum.
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \left( \sum_s \langle m_s\mvec{v} \rangle_s + \epsilon_0 \mvec{E}\times\mvec{B} \right) \dtx = 0.
+  \end{align*}
+  The Vlasov-Maxwell system conserves total (particles plus field) energy.
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \left(\sum_s \langle \frac{1}{2} m_s |\mvec{v}|^2 \rangle_s + \frac{\epsilon_0}{2} |\mvec{E}|^2 + \frac{1}{2\mu_0} |\mvec{B}|^2 \right) \dtx = 0.
+  \end{align*}
+\end{frame}
+
+\begin{frame}{Conservation properties of Vlasov-Maxwell equations}
+  \small
+  Besides the fundamental conservation laws, in the \emph{absence of
+    collisions} we can also show that
+  \begin{align*}
+    \frac{d}{dt}\int_K \frac{1}{2} f_s^2\thinspace d\mvec{z} = 0,
+  \end{align*}
+  where the integration is taken over the complete phase-space. Also,
+  the entropy is a \emph{non-decreasing} function of time
+  \begin{align*}
+    \frac{d}{dt}\int_K -f_s \ln(f_s) \thinspace d\mvec{z} \ge 0.
+  \end{align*}
+  For collisionless system the entropy remains \emph{constant}.
+  (Prove these properties as homework/classwork problems).
+  \begin{itemize}
+  \item It is not always possible to ensure all these properties are
+    preserved numerically. For example: usually one can either ensure
+    momentum \emph{or} energy conservation but not both; it is very
+    hard to ensure $f(t,\mvec{x},\mvec{v})>0$.
+  \item Much of modern computational plasma physics research is aimed
+    towards constructing schemes that preserve these properties.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Single particle motion in an electromagnetic field}
+  \small%
+  \begin{itemize}
+  \item In the \emph{Particle-in-cell} (PIC) method the Vlasov-Maxwell
+    equation is solved in the \emph{Lagrangian frame} in which the
+    phase-space is represented by \emph{finite-sized}
+    ``macro-particles''.
+  \item In the Lagrangian frame the distribution
+    function remains constants along \emph{characteristics} in
+    phase-space.
+  \item These characteristics satisfy the ODE of particles moving
+    under Lorentz force law
+    \begin{align*}
+      \frac{d\mvec{x}}{dt} &= \mvec{v} \\
+      \frac{d\mvec{v}}{dt} &= \frac{q}{m}(\mvec{E}(\mvec{x},t) + \mvec{v}\times\mvec{B}(\mvec{x},t))
+    \end{align*}
+  \item We will first focus on solving the equations-of-motion for
+    the macro-particles, leaving solution of Maxwell equations and
+    coupling to particles for Lecture 2.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator}
+  \small%
+  Consider first the simple harmonic oscillator
+  \begin{align*}
+    \frac{d^2z}{dt^2} = -\omega^2 z
+  \end{align*}
+  This has exact solution $z = a\cos(\omega t) + b\sin(\omega t)$,
+  where $a$ and $b$ are arbitrary constants. How to solve this
+  numerically? Write as a system of first-order ODEs
+  \begin{align*}
+    \frac{dz}{dt} = v; \quad \frac{dv}{dt} = -\omega^2 z
+  \end{align*}
+  Note that the coordinates $(z,v)$ label the \emph{phase-space} of
+  the harmonic oscillator. Multiply the second equation by $v$ and use
+  the first equation to get
+  \begin{align*}
+    \frac{d}{dt}\left(\frac{1}{2} v^2 + \frac{1}{2}\omega^2 z^2\right) = 0.
+  \end{align*}
+  This is the \emph{energy} and is \emph{conserved}.%
+  
+  \bf{Question: how to solve the ODE such that the energy is conserved
+    by the \emph{discrete scheme}?}
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  First attempt: use the simplest possible scheme, replace derivatives
+  with difference approximations
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} = v^n; \quad \frac{v^{n+1}-v^n}{\Delta t} = -\omega^2 z^n
+  \end{align*}
+  or
+  \begin{align*}
+    z^{n+1} = z^n + \Delta t v^n; \quad v^{n+1} = v^n - \Delta t \omega^2 z^n
+  \end{align*}
+  This is the \emph{forward Euler} scheme. Lets check if the discrete
+  scheme conserves energy:
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 =
+    (1+\omega^2 \Delta t^2)((v^{n})^2 + \omega^2 (z^{n})^2)
+  \end{align*}
+  The presence of the $\omega^2 \Delta t^2$ in the bracket spoils the
+  conservation. So the forward Euler scheme \emph{does not} conserve
+  energy. Also, note that the energy, in fact, is \emph{increasing}!
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  Closer look: write as a matrix equation
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+    \right]
+    =
+    \underbrace{
+    \left[
+    \begin{matrix}
+      1 & \Delta t \\
+      -\omega^2 \Delta t & 1
+    \end{matrix}
+    \right]
+    }_{\textrm{Jacobian},\ J}
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  Observe that the determinant of the Jacobian is
+  $\det(J)=(1+\omega^2\Delta t^2)$ which is the same factor as appears
+  in the energy relation. One may reasonably conjecture that when this
+  determinant is one, then perhaps energy is conserved.
+
+  \begin{block}{Volume Preserving Scheme}
+    We will call say a scheme preserves \emph{phase-space} volume
+    if the determinant of the Jacobian is $\det(J)=1$.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme}
+  \small%
+  Perhaps a better approximation will be obtained if we use
+  \emph{averaged} values of $z,v$ on the RHS of the discrete
+  equation:
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} &= \frac{v^n +v^{n+1}}{2} \\
+    \frac{v^{n+1}-v^n}{\Delta t} &= -\omega^2\frac{z^n + z^{n+1}}{2}
+  \end{align*}
+  This is an \emph{implicit} method as the solution at the next
+  time-step depends on the old as well as the next time-step
+  values. In this simple case we can explicitly write the update in a
+  matrix form as
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+      \right]
+      =
+      \frac{1}{1+\omega^2\Delta t^2/4}
+    \left[
+      \begin{matrix}
+        1-\omega^2\Delta t^2/4  & \Delta t \\
+        -\omega^2 \Delta t & 1-\omega^2\Delta t^2/4
+      \end{matrix}
+    \right]
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  For this scheme $\det(J)=1$. So the mid-point scheme conserves
+  phase-space volume! Some algebra also shows that
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
+  \end{align*}
+  showing that energy is also conserved by the mid-point scheme.
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme is symplectic}
+  A more stringent constraint on a scheme for the simple harmonic
+  oscillator is that it be \emph{symplectic}. To check if a scheme is
+  symplectic one checks to see if
+  \begin{align*}
+    J^T\sigma J = \sigma
+  \end{align*}
+  where $\sigma$ is the \emph{unit symplectic matrix}
+  \begin{align*}
+    \sigma
+    =
+    \left[
+      \begin{matrix}
+        0 & 1 \\
+        -1 & 0
+      \end{matrix}
+    \right]    
+  \end{align*}
+  Turns out that the mid-point scheme for the harmonic oscillator is
+  also symplectic. Note that if a scheme conserves phase-space
+  volume, it \emph{need not} be symplectic.
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  \small%
+  To study the stability, accuracy and convergence of a scheme one usually
+  looks at the first order ODE
+  \begin{align*}
+    \frac{dz}{dt} = -\gamma z
+  \end{align*}
+  where $\gamma = \lambda + i\omega$ is the complex frequency. The
+  exact solution to this equation is $z(t) = z_0 e^{-\gamma t}$. The
+  solution has damped/growing modes ($\lambda>0$ or $\lambda<0$) as
+  well as oscillating modes.
+
+  \begin{itemize}
+    \item The forward Euler scheme for this equation is
+      \begin{align*}
+        z^{n+1} = z^n - \Delta t \gamma z^n = (1-\Delta t\gamma) z^n.
+      \end{align*}
+    \item The mid-point scheme for this equation is
+      \begin{align*}
+        z^{n+1} = \left(\frac{1-\gamma\Delta t/2}{1+\gamma\Delta t/2}\right) z^n
+      \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine how \emph{accurate} the scheme is by looking at how
+  many terms the scheme matches the Taylor series expansion of the
+  exact solution:
+  \begin{align*}
+    z(t^{n+1}) = z(t^n)
+    \left(
+    1 - \gamma\Delta t + \frac{1}{2}\gamma^2 \Delta t^2 - \frac{1}{6}\gamma^3 \Delta t^3 + \ldots
+    \right)
+  \end{align*}
+
+  \begin{itemize}
+  \item The forward Euler scheme matches the \emph{first two terms}
+    \begin{align*}
+      z^{n+1} = z^n (1-\Delta t\gamma)
+    \end{align*}
+  \item The mid-point scheme matches the \emph{first three terms}
+    \begin{align*}
+      z^{n+1} = z^n \left(
+      1-\Delta t\gamma - \frac{1}{2}\gamma^2 \Delta t^2  - \frac{1}{4} \gamma^3 \Delta t^3 + \ldots
+      \right)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine if the scheme is \emph{stable} by looking at the
+  amplification factor $| z^{n+1}/z^n|$. Note that for damped modes
+  ($\lambda>0$) this quantity \emph{decays} in time, while for purely
+  oscillating modes ($\lambda = 0$) this quantity remains
+  \emph{constant}.
+
+  
+  \begin{itemize}
+  \item The amplification factor for the forward Euler scheme in the
+    absence of damping is $1+\omega^2\Delta t^2 > 1$, hence this
+    scheme is \emph{unconditionally unstable}.
+  \item The amplification factor for the mid-point scheme in the
+    absence of damping is exactly 1, showing that the mid-point scheme
+    is \emph{unconditionally stable}, that is, one can take as large
+    time-step one wants without the scheme ``blowing up''. Of course,
+    the errors will increase with larger $\Delta t$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Runge-Kutta schemes}
+  \begin{itemize}
+  \item Even though the forward Euler scheme is unconditionally
+    unstable, we can use it to construct other schemes that \emph{are}
+    stable and are also more accurate (than first order).
+  \item For example, a class of Runge-Kutta schemes can be written as
+    a combination of forward Euler updates. In particular, the
+    \emph{strong stability preserving} schemes are important when
+    solving hyperbolic equations. Note that these RK schemes will
+    \emph{not} conserve energy for the harmonic oscillator, but
+    \emph{decay} it.
+  \item Other multi-stage Runge-Kutta schemes can be constructed that
+    allow very large time-steps for diffusive processes, for example,
+    that come about when time-stepping diffusion equations.
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+
+\begin{frame}{}
+\end{frame}
+
+% ----------------------------------------------------------------
