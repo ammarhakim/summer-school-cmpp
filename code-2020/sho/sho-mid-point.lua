@@ -8,7 +8,7 @@ local exactPosition = DataStruct.DynVector { numComponents = 3 }
 omega = 1.0 --frequency
 z0 = 0.0 -- initial position
 v0 = 1.0 -- initial velocity
-tEnd = 10*6*math.pi -- final time
+tEnd = 10*2*math.pi -- final time
 cflFrac = 0.25 -- time-step factor
 
 -- function to add data to output field
