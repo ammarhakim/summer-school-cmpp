@@ -276,13 +276,13 @@ These are only selection of problems I am directly familiar with. I
 hope it gives you a flavor and understanding why computational plasma
 physics is such a serious and important field!
 
-Lecture 2: Introduction and the Big-Picture
--------------------------------------------
+Lecture 2: Special ODE Integrators, FDTD Scheme
+-----------------------------------------------
 
 `PDF of Lecture 2 slides <./_static/lec2-2020.pdf>`_
 
 Designing ODE solvers
-====================
+=====================
 
 The concept of phase-space volume preserving and symplectic schemes
 can be more easily understood by looking at the example of a simple
