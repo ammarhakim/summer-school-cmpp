@@ -1,0 +1,717 @@
+\documentclass[pdf]{beamer}
+\usepackage{hyperref}
+%% AMS packages and font files
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{caption}
+
+\captionsetup{font=scriptsize,labelfont=scriptsize}
+\footnotesize\small
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\newcommand{\eqr}[1]{Eq.\thinspace(#1)}
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pfracc}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pfraca}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\pfracb}[2]{\partial #1/\partial #2}
+\newcommand{\pfracbb}[2]{\partial^2 #1/\partial #2^2}
+\newcommand{\spfrac}[2]{{\partial_{#1}} {#2}}
+\newcommand{\mvec}[1]{\mathbf{#1}}
+\newcommand{\gvec}[1]{\boldsymbol{#1}}
+\newcommand{\script}[1]{\mathpzc{#1}}
+\newcommand{\eep}{\mvec{e}_\phi}
+\newcommand{\eer}{\mvec{e}_r}
+\newcommand{\eez}{\mvec{e}_z}
+\newcommand{\iprod}[2]{\langle{#1}\rangle_{#2}}
+%\newcommand{\mypause}{\pause}
+\newcommand{\mypause}{}
+\newcommand{\gcs}{\nabla_{\mvec{x}}}
+\newcommand{\gvs}{\nabla_{\mvec{v}}}
+\newcommand{\gps}{\nabla_{\mvec{z}}}
+\newcommand{\dtv}{\thinspace d^3\mvec{v}}
+\newcommand{\dtx}{\thinspace d^3\mvec{x}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{remark}{Remark}
+
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}
+%\newtheorem{thm}{Theorem}
+\newtheorem{proposed}{Proposed Answer}
+\DeclareMathOperator{\spn}{span}
+
+%% autoscaled figures
+\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+
+\usepackage{beamerthemesplit}
+\setbeamercovered{transparent}
+%\usetheme{lined}
+%\usetheme{CambridgeUS}
+%\usecolortheme{dolphin}
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{navigation symbols}{}
+
+% Setup TikZ
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+\title[{\tt }] {Computational Methods in Plasma Physics. Lecture II}%
+\author[http://cmpp.rtfd.io]%
+{Ammar H. Hakim\inst{1}}%
+
+\institute[PPPL]
+{ \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
+}
+
+\date[8/11/2020]{PPPL Graduate Summer School, 2020}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Single particle motion in an electromagnetic field}
+  \small%
+  \begin{itemize}
+  \item In the \emph{Particle-in-cell} (PIC) method the Vlasov-Maxwell
+    equation is solved in the \emph{Lagrangian frame} in which the
+    phase-space is represented by \emph{finite-sized}
+    ``macro-particles''.
+  \item In the Lagrangian frame the distribution
+    function remains constants along \emph{characteristics} in
+    phase-space.
+  \item These characteristics satisfy the ODE of particles moving
+    under Lorentz force law
+    \begin{align*}
+      \frac{d\mvec{x}}{dt} &= \mvec{v} \\
+      \frac{d\mvec{v}}{dt} &= \frac{q}{m}(\mvec{E}(\mvec{x},t) + \mvec{v}\times\mvec{B}(\mvec{x},t))
+    \end{align*}
+  \item We will first focus on solving the equations-of-motion for
+    the macro-particles, leaving solution of Maxwell equations and
+    coupling to particles for Lecture 2.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator}
+  \small%
+  Consider first the simple harmonic oscillator
+  \begin{align*}
+    \frac{d^2z}{dt^2} = -\omega^2 z
+  \end{align*}
+  This has exact solution $z = a\cos(\omega t) + b\sin(\omega t)$,
+  where $a$ and $b$ are arbitrary constants. How to solve this
+  numerically? Write as a system of first-order ODEs
+  \begin{align*}
+    \frac{dz}{dt} = v; \quad \frac{dv}{dt} = -\omega^2 z
+  \end{align*}
+  Note that the coordinates $(z,v)$ label the \emph{phase-space} of
+  the harmonic oscillator. Multiply the second equation by $v$ and use
+  the first equation to get
+  \begin{align*}
+    \frac{d}{dt}\left(\frac{1}{2} v^2 + \frac{1}{2}\omega^2 z^2\right) = 0.
+  \end{align*}
+  This is the \emph{energy} and is \emph{conserved}.%
+  
+  \bf{Question: how to solve the ODE such that the energy is conserved
+    by the \emph{discrete scheme}?}
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  First attempt: use the simplest possible scheme, replace derivatives
+  with difference approximations
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} = v^n; \quad \frac{v^{n+1}-v^n}{\Delta t} = -\omega^2 z^n
+  \end{align*}
+  or
+  \begin{align*}
+    z^{n+1} = z^n + \Delta t v^n; \quad v^{n+1} = v^n - \Delta t \omega^2 z^n
+  \end{align*}
+  This is the \emph{forward Euler} scheme. Lets check if the discrete
+  scheme conserves energy:
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 =
+    (1+\omega^2 \Delta t^2)((v^{n})^2 + \omega^2 (z^{n})^2)
+  \end{align*}
+  The presence of the $\omega^2 \Delta t^2$ in the bracket spoils the
+  conservation. So the forward Euler scheme \emph{does not} conserve
+  energy. Also, note that the energy, in fact, is \emph{increasing}!
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  Closer look: write as a matrix equation
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+    \right]
+    =
+    \underbrace{
+    \left[
+    \begin{matrix}
+      1 & \Delta t \\
+      -\omega^2 \Delta t & 1
+    \end{matrix}
+    \right]
+    }_{\textrm{Jacobian},\ J}
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  Observe that the determinant of the Jacobian is
+  $\det(J)=(1+\omega^2\Delta t^2)$ which is the same factor as appears
+  in the energy relation. One may reasonably conjecture that when this
+  determinant is one, then perhaps energy is conserved.
+
+  \begin{block}{Volume Preserving Scheme}
+    We will call say a scheme preserves \emph{phase-space} volume
+    if the determinant of the Jacobian is $\det(J)=1$.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme}
+  \small%
+  Perhaps a better approximation will be obtained if we use
+  \emph{averaged} values of $z,v$ on the RHS of the discrete
+  equation:
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} &= \frac{v^n +v^{n+1}}{2} \\
+    \frac{v^{n+1}-v^n}{\Delta t} &= -\omega^2\frac{z^n + z^{n+1}}{2}
+  \end{align*}
+  This is an \emph{implicit} method as the solution at the next
+  time-step depends on the old as well as the next time-step
+  values. In this simple case we can explicitly write the update in a
+  matrix form as
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+      \right]
+      =
+      \frac{1}{1+\omega^2\Delta t^2/4}
+    \left[
+      \begin{matrix}
+        1-\omega^2\Delta t^2/4  & \Delta t \\
+        -\omega^2 \Delta t & 1-\omega^2\Delta t^2/4
+      \end{matrix}
+    \right]
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  For this scheme $\det(J)=1$. So the mid-point scheme conserves
+  phase-space volume! Some algebra also shows that
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
+  \end{align*}
+  showing that energy is also conserved by the mid-point scheme.
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme is symplectic}
+  A more stringent constraint on a scheme for the simple harmonic
+  oscillator is that it be \emph{symplectic}. To check if a scheme is
+  symplectic one checks to see if
+  \begin{align*}
+    J^T\sigma J = \sigma
+  \end{align*}
+  where $\sigma$ is the \emph{unit symplectic matrix}
+  \begin{align*}
+    \sigma
+    =
+    \left[
+      \begin{matrix}
+        0 & 1 \\
+        -1 & 0
+      \end{matrix}
+    \right]    
+  \end{align*}
+  Turns out that the mid-point scheme for the harmonic oscillator is
+  also symplectic. Note that if a scheme conserves phase-space
+  volume, it \emph{need not} be symplectic.
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  \small%
+  To study the stability, accuracy and convergence of a scheme one usually
+  looks at the first order ODE
+  \begin{align*}
+    \frac{dz}{dt} = -\gamma z
+  \end{align*}
+  where $\gamma = \lambda + i\omega$ is the complex frequency. The
+  exact solution to this equation is $z(t) = z_0 e^{-\gamma t}$. The
+  solution has damped/growing modes ($\lambda>0$ or $\lambda<0$) as
+  well as oscillating modes.
+
+  \begin{itemize}
+    \item The forward Euler scheme for this equation is
+      \begin{align*}
+        z^{n+1} = z^n - \Delta t \gamma z^n = (1-\Delta t\gamma) z^n.
+      \end{align*}
+    \item The mid-point scheme for this equation is
+      \begin{align*}
+        z^{n+1} = \left(\frac{1-\gamma\Delta t/2}{1+\gamma\Delta t/2}\right) z^n
+      \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine how \emph{accurate} the scheme is by looking at how
+  many terms the scheme matches the Taylor series expansion of the
+  exact solution:
+  \begin{align*}
+    z(t^{n+1}) = z(t^n)
+    \left(
+    1 - \gamma\Delta t + \frac{1}{2}\gamma^2 \Delta t^2 - \frac{1}{6}\gamma^3 \Delta t^3 + \ldots
+    \right)
+  \end{align*}
+
+  \begin{itemize}
+  \item The forward Euler scheme matches the \emph{first two terms}
+    \begin{align*}
+      z^{n+1} = z^n (1-\Delta t\gamma)
+    \end{align*}
+  \item The mid-point scheme matches the \emph{first three terms}
+    \begin{align*}
+      z^{n+1} = z^n \left(
+      1-\Delta t\gamma - \frac{1}{2}\gamma^2 \Delta t^2  - \frac{1}{4} \gamma^3 \Delta t^3 + \ldots
+      \right)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine if the scheme is \emph{stable} by looking at the
+  amplification factor $| z^{n+1}/z^n|$. Note that for damped modes
+  ($\lambda>0$) this quantity \emph{decays} in time, while for purely
+  oscillating modes ($\lambda = 0$) this quantity remains
+  \emph{constant}.
+
+  
+  \begin{itemize}
+  \item The amplification factor for the forward Euler scheme in the
+    absence of damping is $1+\omega^2\Delta t^2 > 1$, hence this
+    scheme is \emph{unconditionally unstable}.
+  \item The amplification factor for the mid-point scheme in the
+    absence of damping is exactly 1, showing that the mid-point scheme
+    is \emph{unconditionally stable}, that is, one can take as large
+    time-step one wants without the scheme ``blowing up''. Of course,
+    the errors will increase with larger $\Delta t$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Runge-Kutta schemes}
+  \begin{itemize}
+  \item Even though the forward Euler scheme is unconditionally
+    unstable, we can use it to construct other schemes that \emph{are}
+    stable and are also more accurate (than first order).
+  \item For example, a class of Runge-Kutta schemes can be written as
+    a combination of forward Euler updates. In particular, the
+    \emph{strong stability preserving} schemes are important when
+    solving hyperbolic equations. Note that these RK schemes will
+    \emph{not} conserve energy for the harmonic oscillator, but
+    \emph{decay} it.
+  \item Other multi-stage Runge-Kutta schemes can be constructed that
+    allow very large time-steps for diffusive processes, for example,
+    that come about when time-stepping diffusion equations.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator}
+  We looked at
+  \begin{align*}
+    \frac{d^2z}{dt^2} = -\omega^2 z
+  \end{align*}
+  and wrote it as system of first-order ODEs
+  \begin{align*}
+    \frac{dz}{dt} = v; \quad \frac{dv}{dt} = -\omega^2 z
+  \end{align*}
+  Now introduce energy-angle coordinates
+  \begin{align*}
+    \omega z = E\sin\theta; \quad v = E\cos\theta
+  \end{align*}
+  then $E^2 = \omega^2 z^2 + v^2 \equiv E_0^2$ is a constant as we
+  showed before. Using these expressions we get the very simple ODE
+  $\dot{\theta} = \omega$. This shows that in phase-space
+  $(v,\omega z)$ the motion is with uniform angular speed along a
+  circle.
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator: Phase-errors}
+  \small%
+  The mid-point scheme had
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
+    = E_0^2
+  \end{align*}
+  which means that the mid-point scheme gets the energy coordinate
+  \emph{exactly} correct. However, we have
+  \begin{align*}
+    \tan\theta^{n+1} = \frac{\omega z^{n+1}}{v^{n+1}}.
+  \end{align*}
+  Using the expressions for the scheme and Taylor expanding in
+  $\Delta t$ we get
+  \begin{align*}
+    \tan\theta^{n+1}
+    =
+    \tan\theta^n +
+    \frac{\omega E_0^2}{(v^{n})^2}\Delta t +
+    \frac{\omega^3 z^n E_0^2}{(v^n)^3}\Delta t^2
+    + O(\Delta t^3)
+  \end{align*}
+  The first three terms match the Taylor expansion of the exact
+  solution $\tan(\theta^n+\omega\Delta t)$ and the last term is the
+  \emph{phase-error}.
+\end{frame}
+
+\begin{frame}{Single particle motion in an electromagnetic field}
+  \small%
+  \begin{itemize}
+  \item In PIC method the Vlasov-Maxwell equation is solved in the
+    \emph{Lagrangian frame}: the phase-space is represented by
+    \emph{finite-sized} ``macro-particles''.
+  \item In the Lagrangian frame the distribution
+    function remains constants along \emph{characteristics} in
+    phase-space.
+  \item These characteristics satisfy the ODE of particles moving
+    under Lorentz force law
+    \begin{align*}
+      \frac{d\mvec{x}}{dt} &= \mvec{v} \\
+      \frac{d\mvec{v}}{dt} &= \frac{q}{m}(\mvec{E}(\mvec{x},t) + \mvec{v}\times\mvec{B}(\mvec{x},t))
+    \end{align*}
+  \item In the absence of an electric field, the kinetic energy must
+    be conserved
+    \begin{align*}
+      \frac{1}{2} |\mvec{v}|^2 = \textrm{constant}.
+    \end{align*}
+    This is independent of the spatial or time dependence of the
+    magnetic field. Geometrically this means that in the absence of an
+    electric field the velocity vector rotates and its tip always lies
+    on a sphere.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Single particle motion in an electromagnetic field}
+  \small%
+  \begin{itemize}
+  \item A mid-point scheme for this equation system would look like
+    \begin{align*}
+    \frac{\mvec{x}^{n+1}-\mvec{x}^n}{\Delta t} &= \frac{\mvec{v}^{n+1}+\mvec{v}^n}{2} \\
+    \frac{\mvec{v}^{n+1}-\mvec{v}^n}{\Delta t} &= \frac{q}{m}
+      \big(
+        \overline{\mvec{E}}(\mvec{x},t) +
+        \frac{\mvec{v}^{n+1}+\mvec{v}^n}{2}\times\overline{\mvec{B}}(\mvec{x},t)
+      \big)
+    \end{align*}
+    The overbars indicate some averaged electric and magnetic fields
+    evaluated from the new and old positions. In general, this would
+    make the scheme nonlinear!
+
+  \item Instead, we will use a \emph{staggered} scheme in which the
+    position and velocity are staggered by half a time-step.
+    \begin{align*}
+    \frac{\mvec{x}^{n+1}-\mvec{x}^n}{\Delta t} &= \mvec{v}^{n+1/2} \\
+    \frac{\mvec{v}^{n+1/2}-\mvec{v}^{n-1/2}}{\Delta t} &= \frac{q}{m}
+      \big(
+        \mvec{E}(\mvec{x}^n,t^n) +
+        \frac{\mvec{v}^{n+1/2}+\mvec{v}^{n-1/2}}{2}\times\mvec{B}(\mvec{x}^n,t^n)
+      \big)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Boris algorithm for the staggered scheme}
+  \footnotesize%
+  The velocity update formula is
+  \begin{align*}
+    \frac{\mvec{v}^{n+1/2}-\mvec{v}^{n-1/2}}{\Delta t} &= \frac{q}{m}
+      \big(
+        \mvec{E}(\mvec{x}^n,t^n) +
+        \frac{\mvec{v}^{n+1/2}+\mvec{v}^{n-1/2}}{2}\times\mvec{B}(\mvec{x}^n,t^n)
+      \big)
+  \end{align*}
+  This appears like an implicit method: most obvious is to construct a
+  linear $3\times 3$ system of equations and invert them to determine
+  $\mvec{v}^{n+1}$. Puzzle to test your vector-identity foo: find
+  $\mvec{A}$ if $\mvec{A} = \mvec{R}+\mvec{A}\times\mvec{B}$.
+
+  The Boris algorithm updates this equation in three steps:
+  \begin{align*}
+    \mvec{v}^- &= \mvec{v}^{n-1/2} + \frac{q}{m}\mvec{E}^n\frac{\Delta t}{2} \\
+    \frac{\mvec{v}^+- \mvec{v}^-}{\Delta t}
+    &=
+      \frac{q}{2 m}(\mvec{v}^++\mvec{v}^-)\times\mvec{B}^n \\
+    \mvec{v}^{n+1/2}
+    &=
+      \mvec{v}^{+} + \frac{q}{m}\mvec{E}^n\frac{\Delta t}{2} \\    
+  \end{align*}
+  Convince yourself that this is indeed equivalent to the staggered
+  expression above. So we have two electric field updates with half
+  time-steps and a rotation due to the magnetic field. Once the
+  updated velocity is computed, we can trivially compute the updated
+  positions.
+\end{frame}
+
+\begin{frame}{The Boris algorithm for the staggered scheme}
+  How to do the rotation? The Boris algorithm does this in several
+  steps:
+  \begin{itemize}
+  \item Compute the $\mvec{t}$ and $\mvec{s}$ vectors as follows
+    \begin{align*}
+      \mvec{t} &= \frac{q\mvec{B}}{m}\frac{\Delta t}{2} \\
+      \mvec{s} &= \frac{2\mvec{t}}{1+|\mvec{t}|^2}
+    \end{align*}
+  \item Compute $\mvec{v}' = \mvec{v}^- + \mvec{v}^-\times\mvec{t}$
+    and finally $\mvec{v}^+ = \mvec{v}^-+\mvec{v}'\times\mvec{s}$.
+  \end{itemize}
+  See Birdsall and Langdon text book Section 4-3 and 4-4 and figure
+  4-4a. Easily extended to relativistic case.%
+  \vskip0.1in%
+  Note that in the absence of an electric field the Boris algorithm
+  conserves kinetic energy.
+\end{frame}
+
+\begin{frame}{Why is the Boris algorithm so good? Can one do better?}
+  \small%
+  See paper by Qin at. al. Phys. Plasmas, {\bf 20}, 084503 (2013) in
+  which it is shown that the Boris algorithm \emph{conserves
+    phase-space volume}. However, they also show that the Boris
+  algorithm is \emph{not} symplectic.
+  \begin{itemize}
+  \item The relativistic Boris algorithm does not properly compute the
+    $\mvec{E}\times\mvec{B}$ velocity. This can be corrected. For
+    example Vay, Phys. Plasmas, {\bf 15}, 056701 (2008). The Vay
+    algorithm however, breaks the phase-space volume preserving
+    property of the Boris algorithm.
+  \item Higuera and Cary, Phys. Plasmas, {\bf 24}, 052104 (2017)
+    showed how to compute the correct $\mvec{E}\times\mvec{B}$ drift
+    velocity and restore volume preserving property. Seems this is
+    probably the current-best algorithm for updating Lorentz
+    equations.
+  \item The saga for better particle push algorithms is not over! For
+    example, an active area of research is to discover good algorithms
+    for \emph{asymptotic} systems, for example, when gyroradius is
+    much smaller than gradient length-scales or gyrofrequency is much
+    higher than other time-scales in the system. Common in most
+    magnetized plasmas.
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \small%
+  Besides pushing particles in electromagnetic fields, we need to
+  compute these fields self-consistently from currents and charges by
+  solving Maxwell equations. First consider Maxwell equations in
+  vacuum:
+  \begin{align*}
+    \frac{\partial \mvec{B}}{\partial t} + \nabla\times\mvec{E} &= 0 \\
+    \epsilon_0\mu_0\frac{\partial \mvec{E}}{\partial t} -
+    \nabla\times\mvec{B} &= 0
+  \end{align*}
+  For these we have the conservation laws
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \mvec{E}\times\mvec{B}  \dtx &= 0 \\
+    \frac{d}{dt} \int_\Omega \left( \frac{\epsilon_0}{2} |\mvec{E}|^2 + \frac{1}{2\mu_0} |\mvec{B}|^2 \right) \dtx &= 0.
+  \end{align*}
+  Note these are \emph{global} conservation laws and one can instead
+  also write \emph{local} conservation laws that include momentum and
+  energy flux terms. How to solve these equations efficiently and
+  maintain (some) conservation and geometric properties?
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \begin{itemize}
+  \item Maxwell equations have a very special geometric structure. The
+    electric field $\mvec{E}$ is a \emph{vector} while the magnetic
+    field $\mvec{B}$ is a \emph{bivector} (this is disguised in the
+    usual formulations of Maxwell equations).
+  \item (In spacetime formulations the complete electromagnetic field
+    is represented as a single bivector in 4D space-time).
+  \item The fact that we are dealing with two objects of
+    \emph{different} geometric types indicates that the discrete
+    Maxwell equations should also inherit this somehow.
+  \item The Yee algorithm, often called the \emph{finite-difference
+      time-domain} algorithm is the most successful (and simple)
+    algorithm that accounts of this geometric structure. It is
+    implemented in most PIC codes, though recent research has focused
+    on structure preserving finite-element and other methods.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \begin{figure}
+    \incfig{Yee-cube.png}
+    \caption{Standard Yee-cell. Electric field components (vectors)
+      are located on edges while magnetic field components
+      (bivectors) are located on faces.}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \small%
+  On the Yee-cell the difference approximation to Maxwell equations
+  ``falls out'', almost like magic. The updates are staggered in time
+  and use two \emph{different} discrete curl operators:
+  \begin{align*}
+    \mvec{B}^{n+1/2} &= \mvec{B}^{n-1/2} - \Delta t\thinspace \nabla_E\times\mvec{E}^{n} \\    
+    \mvec{E}^{n+1} &= \mvec{E}^n + \Delta t/c^2\thinspace \nabla_F\times\mvec{B}^{n+1/2}
+  \end{align*}
+  Here the symbols $\nabla_F\times$ and $\nabla_E\times$ are the
+  discrete curl operators:
+  \begin{itemize}
+  \item The first takes \emph{face-centered} magnetic field and
+    computes it curl. This operator \emph{puts the result on cell
+      edges}.
+  \item The second takes \emph{edge-centered} electric field and
+    computes it curl. This operator \emph{puts the result on cell
+      faces}.
+  \item The structure of Yell-cell also indicates that \emph{currents}
+    must be co-located with the electric field and computed at half
+    time-steps.
+  \end{itemize}
+  This duality neatly reflects the underlying geometry of Maxwell
+  equations. The staggering in time reflects the fact that in 4D the
+  electromagnetic field is a bivector in spacetime.
+\end{frame}
+
+\begin{frame}{Divergence relations are exactly maintained}
+  \small%
+  We can show that the discrete Maxwell equations on a Yee-cell
+  maintain the divergence relations exactly:
+  \begin{align*}
+    \nabla_F\cdot\mvec{B}^{n+1/2} &= 0 \\
+    \nabla_E\cdot\mvec{E}^n &= 0.
+  \end{align*}
+  There is an additional constraint of Maxwell equations in a plasma,
+  that is, the current conservation:
+  \begin{align*}
+    \pfrac{\varrho_c}{t} + \nabla\cdot\mvec{J} = 0.
+  \end{align*}
+  where $\varrho_c$ is the charge density and $\mvec{J}$ is the
+  current density. On the Yell-cell this becomes
+  \begin{align*}
+    \frac{\varrho_c^{n+1}-\varrho_v^{n}}{\Delta t}
+    +
+    \nabla_E\cdot\mvec{J}^{n+1/2} = 0.    
+  \end{align*}
+  One must ensure that current from particles is computed carefully to
+  ensure that this expression is satified. See Esirkepov,
+  Comp. Phys. Communications, {\bf 135} 144-153 (2001).
+\end{frame}
+
+\begin{frame}{Other schemes: Finite-Volume method for Maxwell
+    equations}
+  \small
+  Consider the 1D source-free Maxwell equations
+  \begin{align*}
+    \frac{\partial }{\partial t}
+    \left[
+    \begin{matrix}
+      E_y \\
+      B_z
+    \end{matrix}
+    \right]
+    +
+    \frac{\partial }{\partial x}
+    \left[
+    \begin{matrix}
+      c^2B_z \\
+      E_y
+    \end{matrix}
+    \right]
+    =
+    0.
+  \end{align*}
+  Basic idea is to transform the equation into uncoupled advection
+  equations for the \emph{Riemann variables}. This is always possible
+  in 1D for \emph{linear hyperbolic} systems. For the above system,
+  multiply the second equation by $c$ and add and subtract from the
+  first equation to get
+  \begin{align*}
+    \frac{\partial }{\partial t}\left(E_y + c B_z\right) + c \frac{\partial }{\partial x}\left(E_y + c B_z\right) &= 0 \\
+    \frac{\partial }{\partial t}\left(E_y - c B_z\right) - c \frac{\partial }{\partial x}\left(E_y - c B_z\right) &= 0.
+  \end{align*}
+  Note that these are two uncoupled passive advection equations for
+  the variables $w^\pm = E_y \pm c B_z$ with advection speeds $\pm
+  c$.
+\end{frame}
+
+\begin{frame}{Finite-Volume method for Maxwell equations}
+  \small%
+  \begin{itemize}
+  \item Instead of using the Yee-cell one can solve Maxwell equations
+    using finite-volume methods developed in aerospace and fluid
+    mechanics.
+  \item In these schemes one uses the local characterstic direction to
+    ``upwind'' values at cell faces, adding stability to the scheme
+    when simulating small-scale features.
+  \item Finite-volume schemes are as cheap (or expensive) as Yell-cell
+    based FDTD schemes and are also easy to implement for Maxwell
+    equations. However, they suffer from some disadvantages.
+  \item First, it is very hard to ensure divergence relations are
+    maintained. One needs to correct the divergence errors somehow, by
+    adding some additional equations to the system.
+  \item Energy is not conserved by finite-volume schemes that use
+    upwinding. Special choices of basis-functions can be used to
+    construct energy conserving schemes, but these have other issues
+    (also shared by FDTD schemes).
+  \item However, in some situations, FV based Maxwell solvers are
+    useful and have been successfully applied in many large-scale
+    problems.
+  \end{itemize}
+\end{frame}  
+
+% ----------------------------------------------------------------  
+
+\begin{frame}{Choice of numerical fluxes for Maxwell equations impacts
+    energy conservation}
+
+  The electromagnetic energy is given by
+  \begin{align*}
+    \mathcal{E} = \frac{\epsilon_0}{2} E_y^2 + \frac{1}{2\mu_0} B_z^2
+  \end{align*}
+  Notice that this is the $L_2$ norm of the electromagnetic
+  field. 
+  \begin{itemize}
+  \item Hence, as we will show tomorrow, if we use upwinding to
+    compute numerical fluxes, the \emph{electromagnetic energy will
+      decay}.
+  \item If we use central fluxes (average left/right values) then the
+    EM energy will remain conserved by the \emph{time-continuous}
+    scheme. However, the Runge-Kutta time-stepping will add small
+    diffusion that will decay the total energy a little.
+  \item However, the energy decay rate will be \emph{independent} of
+    the spatial resolution and will reduce with smaller time-steps.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
+
+\end{document}
+
+
+\begin{frame}{}
+\end{frame}
+
+% ----------------------------------------------------------------

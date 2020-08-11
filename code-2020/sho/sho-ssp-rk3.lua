@@ -24,27 +24,37 @@ function exactSolution(t)
    return z, v
 end
 
+-- single forward Euler step
+function forwardEuler(dt, zold, vold)
+   return zold+dt*vold, vold-dt*omega^2*zold
+end
+
 -- store initial conditions
 appendData(ptclPosition, 0.0, z0, v0)
 appendData(exactPosition, 0.0, z0, v0)
 
 -- compute dt
-dt = cflFrac*1.0/omega
-print(string.format("Using dt*omega %g ...", dt*omega))
+local dt = cflFrac*1.0/omega
 
 -- main loop
-isDone = false
-tCurr = 0.0
+local isDone = false
+local tCurr = 0.0
 while not isDone do
    if (tCurr+dt >= tEnd) then
       isDone = true
       dt = tEnd-tCurr
    end
    
-   -- update solution
-   local jfact = 1/(1+omega^2*dt^2/4)   
-   local z1 = jfact*((1-omega^2*dt^2/4)*z0 + dt*v0)
-   local v1 = jfact*(-omega^2*dt*z0 + (1-omega^2*dt^2/4)*v0)
+   -- RK stage 1
+   zr1, vr1 = forwardEuler(dt, z0, v0)
+   -- RK stage 2
+   zr2, vr2 = forwardEuler(dt, zr1, vr1)
+   zr2 = 3/4*z0 + 1/4*zr2
+   vr2 = 3/4*v0 + 1/4*vr2
+   -- RK stage 3
+   zr3, vr3 = forwardEuler(dt, zr2, vr2)
+   z1 = 1/3*z0 + 2/3*zr3
+   v1 = 1/3*v0 + 2/3*vr3
 
    -- store solution ..
    appendData(ptclPosition, tCurr+dt, z1, v1)

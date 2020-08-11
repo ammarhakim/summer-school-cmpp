@@ -212,7 +212,7 @@ Space Physics Examples: Parker Solar Probe
   Vlasov-Maxwell equations) will be needed to fully understand the
   physical processes.
 
-- Cutting-edge simulations will be critcial to this. Serious research
+- Cutting-edge simulations will be critical to this. Serious research
   into numerics of Vlasov-Maxwell needs to be done and very large
   simulations need to be run.
 
@@ -222,7 +222,7 @@ Many other missions are active and planned: `BepiColombo
 
 - Much of the deep understanding of plasma processes in solar system
   planets (magnetospheres, ionosphere) can only be gained from
-  detailed modeling: global kinetic modelling is likely
+  detailed modeling: global kinetic modeling is likely
   impossible. **How to incorporate some kinetic effects into fluid
   models?**
 
@@ -253,7 +253,7 @@ The `Scientific Discovery through Advanced Computing
 fusion has large projects that address the very serious **Billion
 Dollar Question**: will controlled fusion be eventually possible?
 
-- The numerics research here is focussed on gyrokinetic and even full
+- The numerics research here is focused on gyrokinetic and even full
   kinetic understanding of fundamental turbulence and transport
   processes in the tokamak. **These equations are very difficult to
   solve!**
@@ -269,12 +269,17 @@ Dollar Question**: will controlled fusion be eventually possible?
   <https://iopscience.iop.org/journal/0741-3335/page/Special-Issue-on-Runaway-Electrons>`_.
 
 - Very serious! **Will need huge kinetic calculations**. Also, the
-  formulation of self-consistent coupling betwen the runaway electrons
+  formulation of self-consistent coupling between the runaway electrons
   and MHD is not complete. See review by [Boozer2015]_.
 
 These are only selection of problems I am directly familiar with. I
 hope it gives you a flavor and understanding why computational plasma
 physics is such a serious and important field!
+
+Lecture 2: Introduction and the Big-Picture
+-------------------------------------------
+
+`PDF of Lecture 2 slides <./_static/lec2-2020.pdf>`_
 
 Designing ODE solvers
 ====================
@@ -319,6 +324,60 @@ simulations. Such very high-order schemes have not found use in
 plasma-physics yet, mainly as the Maxwell solvers used in PIC codes
 are mostly second-order anyway. However, it is possible that these
 very high-order methods are useful in orbit codes.
+
+Particles in an electromagnetic field, FDTD methods
+===================================================
+
+Particle-in-cell methods are based on pushing macro-particles. These
+represent the motion of characteristics in phase-space, along which
+the distribution function is conserved. The macro-particle
+equations-of-motion are
+
+.. math::
+
+   \frac{d\mathbf{x}}{dt} &= \mathbf{v} \\
+   \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
+
+The most widely used method to solve this system of ODEs is the *Boris
+algorithm*. See `this excerpt
+<./_static/Birdsall-Landon-Boris-Push.pdf>`_ from Birdsall and Langdon
+book for details on how to implement this efficiently.
+
+The Boris algorithm is surprisingly good: it is a *second-order*,
+*time-centered* method that *conserves phase-space volume*. However,
+the error in phase-velocity (that is there is an error in time-period
+of orbits) accumulates *linearly*, as we saw for the harmonic
+oscillator. See [Qin2013]_ for proofs that the Boris algorithm is
+*not* symplectic but conserves phase-space volume.
+
+The relativistic Boris algorithm does not compute the correct
+:math:`\mathbf{E}\times\mathbf{B}` velocity. This can be corrected for
+and still maintain the volume-preserving property and was done in
+[HigueraCary2017]_.
+
+The Yee-cell preserves the underlying geometric structure of Maxwell
+equations, and ensures that the divergence relations are maintained in
+the case of vacuum fields. In a plasma, however, current deposition
+needs to be done carefully to ensure current continuity is
+satisfied. See [Esirkepov2001]_, for example.
+
+For extension of standard FDTD method to complex geometries, see, for
+example [Nieter2009]_ and other references. Recent research has
+focused on developing finite-element based PIC codes (that maintain
+geometric structure of Maxwell equations), but these are usually very
+expensive to run and very complex to develop.
+
+Sometimes finite-volume schemes are also used to solve Maxwell
+equations. These may have some advantages and disadvantages compared
+to standard FDTD schemes. For example, FV usually do not conserve
+energy and find it hard to satisfy divergence relations. For a
+comparison of FV and FDTD methods see `this page
+<http://ammar-hakim.org/sj/je/je6/je6-maxwell-solvers.html>`_.
+
+A comprehensive review of structure preserving algorithms for use in
+plasma physics is provided by [Morrison2017]_. It has numerous
+references to the literature and should be consulted to develop a
+detailed understanding of such schemes.
   
 References
 ----------
