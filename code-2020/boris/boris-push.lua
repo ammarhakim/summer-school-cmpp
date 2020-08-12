@@ -2,13 +2,14 @@ local DataStruct = require "DataStruct"
 local math = require("math")
 local ffi = require("ffi")
 
+
 charge = 1.0 -- particle charge
 mass = 1.0 -- particle mass
 Bmax = 1.0 -- estimate for maximum B field
-x0, y0, z0 = 1.0, 0.0, 0.0 -- initial position
-vx0, vy0, vz0 = 0.0, 1.0, 0.1 -- initial velocity
-tEnd = 6*math.pi -- end-time for simulation
-cflFrac = 0.1 -- time-step fraction of CFL
+x0, y0, z0 = -1.0, 0.0, 0.0 -- initial position
+vx0, vy0, vz0 = 0.0, 1.0, 0.0 -- initial velocity
+tEnd = 6*2*math.pi -- end-time for simulation
+cflFrac = 0.2 -- time-step fraction of CFL
 
 -- function to compute electromagentic field
 -- returns Ex, Ey, Ez, Bx, By, Bz
@@ -31,7 +32,13 @@ function emSpiralField(t, x, y, z)
    return Ex, Ey, 0.0, 0.0, 0.0, Bz
 end
 
-emField = emFieldConstant
+function ricketson(t, x, y, z)
+   local Ey = 1.0
+   local Bz = math.sqrt(1+4*(x-12)^2)
+   return 0.0, Ey, 0.0, 0.0, 0.0, Bz
+end
+
+local emField = emFieldConstant
 
 -- Simulation code: no need to modify
 
@@ -100,22 +107,50 @@ function appendEnergy(t, ptcl)
    ptclEnergy:appendData(t, { ke })
 end
 
+local ptclRadius = DataStruct.DynVector { numComponents = 1 }
+function appendRadius(t, ptcl)
+   local rad = math.sqrt(ptcl.x[0]^2+ptcl.x[1]^2)
+   ptclRadius:appendData(t, { rad })
+end
+
+local gyroAngle = DataStruct.DynVector { numComponents = 1 }
+local exactAngle = DataStruct.DynVector { numComponents = 1 }
+function appendGyroAngle(t, ptcl)
+   local ang = math.atan2(ptcl.x[1], ptcl.x[0])
+   gyroAngle:appendData(t, { ang*180/math.pi })
+   exactAngle:appendData(t, { 180-360*t/(2*math.pi) })
+end
+
 -- stores particle position and velocity
 local ptclPosition = DataStruct.DynVector { numComponents = 3 }
 local ptclVelocity = DataStruct.DynVector { numComponents = 3 }
 
 -- compute dt
 omega0 = math.abs(charge)*Bmax/mass
-dt = cflFrac*0.5/omega0
+dt = cflFrac/omega0
 -- particle structure
 ptcl = ffi.new("particle_t")
 
 ptcl.x[0], ptcl.x[1], ptcl.x[2] = x0, y0, z0
-ptcl.v[0], ptcl.v[1], ptcl.v[2] = vx0, vy0, vz0
+
+local qmdt = 0.5*dt*charge/mass
+
+-- we need to compute initial velocity at t = -dt/2
+local Ex0, Ey0, Ez0, Bx0, By0, Bz0 = emField(0.0, x0, y0, z0)
+local vxt0 = vx0 - qmdt*(Ex0 + vy0*Bz0-vz0*By0)
+local vyt0 = vy0 - qmdt*(Ey0 + vz0*Bx0-vx0*Bz0)
+local vzt0 = vz0 - qmdt*(Ez0 + vx0*Bz0-vz0*Bx0)
+
+ptcl.v[0], ptcl.v[1], ptcl.v[2] = vxt0, vyt0, vzt0
 
 appendData(ptclPosition, 0.0, ptcl.x[0], ptcl.x[1], ptcl.x[2])
 appendData(ptclVelocity, 0.0, ptcl.v[0], ptcl.v[1], ptcl.v[2])
 appendEnergy(0.0, ptcl)
+appendRadius(0.0, ptcl)
+appendGyroAngle(0.0, ptcl)
+
+print(string.format(
+	 "Running calculation with time-step %g, %g time-steps per period ...", dt, 2*math.pi/omega0/dt))
 
 -- main loop
 isDone = false
@@ -133,10 +168,16 @@ while not isDone do
    appendData(ptclPosition, tCurr+dt, ptcl.x[0], ptcl.x[1], ptcl.x[2])
    appendData(ptclVelocity, tCurr+dt, ptcl.v[0], ptcl.v[1], ptcl.v[2])
    appendEnergy(tCurr+dt, ptcl)
+   appendRadius(tCurr+dt, ptcl)
+   appendGyroAngle(tCurr+dt, ptcl)
 
    tCurr = tCurr+dt
 end
+print("Done!")
 
 ptclPosition:write("ptclPosition.bp")
 ptclVelocity:write("ptclVelocity.bp")
 ptclEnergy:write("ptclEnergy.bp")
+ptclRadius:write("ptclRadius.bp")
+gyroAngle:write("gyroAngle.bp")
+exactAngle:write("exactAngle.bp")
