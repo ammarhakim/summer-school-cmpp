@@ -378,6 +378,67 @@ A comprehensive review of structure preserving algorithms for use in
 plasma physics is provided by [Morrison2017]_. It has numerous
 references to the literature and should be consulted to develop a
 detailed understanding of such schemes.
+
+Lecture 3: FDTD Scheme for Maxwell equations, hyperbolic equations
+------------------------------------------------------------------
+
+`PDF of Lecture 3 slides <./_static/lec3-2020.pdf>`_
+
+Solving Maxwell equations with FDTD scheme
+==========================================
+
+The Yee-cell preserves the underlying geometric structure of Maxwell
+equations, and ensures that the divergence relations are maintained in
+the case of vacuum fields. In essence, the electric field is a
+*vector* quantity (associated with lines) while the magnetic field is
+a *bi-vector* quantity (associated with surfaces). Hence, the most
+natural representation on a discrete grid utilizes this geometric fact
+to build a consistent scheme.
+
+To couple the plasma to the field currents and charges need to be
+"deposited" on the grid in a careful manner. Current continuity needs
+to be satisfied. See [Esirkepov2001]_, for example.
+
+For extension of standard FDTD method to complex geometries, see, for
+example [Nieter2009]_ and other references. Recent research has
+focused on developing finite-element based PIC codes (that maintain
+geometric structure of Maxwell equations), but these are usually very
+expensive to run and very complex to develop.
+
+Sometimes finite-volume schemes are also used to solve Maxwell
+equations. These may have some advantages and disadvantages compared
+to standard FDTD schemes. For example, FV usually do not conserve
+energy and find it hard to satisfy divergence relations. For a
+comparison of FV and FDTD methods see `this page
+<http://ammar-hakim.org/sj/je/je6/je6-maxwell-solvers.html>`_.
+
+A comprehensive review of structure preserving algorithms for use in
+plasma physics is provided by [Morrison2017]_. It has numerous
+references to the literature and should be consulted to develop a
+detailed understanding of such schemes.
+
+The literature on geometric and Lagrangian and Hamiltonian methods is
+difficult for most plasma physicist to understand. The classic Dover
+textbook by Lovelock and Rund `"Tensors, Differential Forms, and
+Variational Principles"
+<https://www.amazon.com/Tensors-Differential-Variational-Principles-Mathematics/dp/0486658406>`_.
+
+Hyperbolic equations
+====================
+
+Hyperbolic equations describe a broad class of physical problems and
+are essentially characterized by finite propagation speed of
+disturbances. Examples of hyperbolic equations include Maxwell
+equations, Euler equations for ideal fluids and ideal MHD equations.
+
+To solve hyperbolic equations one needs to use special methods, in
+particular when shocks and other nonlinear phenomena are present
+(rarefaction waves, contact discontinuities, compression waves). These
+methods go by the name of "shock capturing schemes" and were
+originally developed in the aerospace community to solve for transonic
+and supersonic flows on airplanes and re-entry vehicles. They are
+widely used in astrophysics, but not so much in studying fusion
+plasmas.
   
 References
 ----------
