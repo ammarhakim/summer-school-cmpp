@@ -1,0 +1,411 @@
+\documentclass[pdf]{beamer}
+\usepackage{hyperref}
+%% AMS packages and font files
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{caption}
+
+\captionsetup{font=scriptsize,labelfont=scriptsize}
+\footnotesize\small
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\newcommand{\eqr}[1]{Eq.\thinspace(#1)}
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pfracc}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pfraca}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\pfracb}[2]{\partial #1/\partial #2}
+\newcommand{\pfracbb}[2]{\partial^2 #1/\partial #2^2}
+\newcommand{\spfrac}[2]{{\partial_{#1}} {#2}}
+\newcommand{\mvec}[1]{\mathbf{#1}}
+\newcommand{\gvec}[1]{\boldsymbol{#1}}
+\newcommand{\script}[1]{\mathpzc{#1}}
+\newcommand{\eep}{\mvec{e}_\phi}
+\newcommand{\eer}{\mvec{e}_r}
+\newcommand{\eez}{\mvec{e}_z}
+\newcommand{\iprod}[2]{\langle{#1}\rangle_{#2}}
+%\newcommand{\mypause}{\pause}
+\newcommand{\mypause}{}
+\newcommand{\gcs}{\nabla_{\mvec{x}}}
+\newcommand{\gvs}{\nabla_{\mvec{v}}}
+\newcommand{\gps}{\nabla_{\mvec{z}}}
+\newcommand{\dtv}{\thinspace d^3\mvec{v}}
+\newcommand{\dtx}{\thinspace d^3\mvec{x}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{remark}{Remark}
+
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}
+%\newtheorem{thm}{Theorem}
+\newtheorem{proposed}{Proposed Answer}
+\DeclareMathOperator{\spn}{span}
+
+%% autoscaled figures
+\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+
+\usepackage{beamerthemesplit}
+\setbeamercovered{transparent}
+%\usetheme{lined}
+%\usetheme{CambridgeUS}
+%\usecolortheme{dolphin}
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{navigation symbols}{}
+
+% Setup TikZ
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+\title[{\tt }] {Computational Methods in Plasma Physics. Lecture III}%
+\author[http://cmpp.rtfd.io]%
+{Ammar H. Hakim\inst{1}}%
+
+\institute[PPPL]
+{ \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
+}
+
+\date[8/12/2020]{PPPL Graduate Summer School, 2020}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \small%
+  Besides pushing particles in electromagnetic fields, we need to
+  compute these fields self-consistently from currents and charges by
+  solving Maxwell equations. First consider Maxwell equations in
+  vacuum:
+  \begin{align*}
+    \frac{\partial \mvec{B}}{\partial t} + \nabla\times\mvec{E} &= 0 \\
+    \epsilon_0\mu_0\frac{\partial \mvec{E}}{\partial t} -
+    \nabla\times\mvec{B} &= 0
+  \end{align*}
+  For these we have the conservation laws
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \mvec{E}\times\mvec{B}  \dtx &= 0 \\
+    \frac{d}{dt} \int_\Omega \left( \frac{\epsilon_0}{2} |\mvec{E}|^2 + \frac{1}{2\mu_0} |\mvec{B}|^2 \right) \dtx &= 0.
+  \end{align*}
+  Note these are \emph{global} conservation laws and one can instead
+  also write \emph{local} conservation laws that include momentum and
+  energy flux terms. How to solve these equations efficiently and
+  maintain (some) conservation and geometric properties?
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \begin{itemize}
+  \item Maxwell equations have a very special geometric structure. The
+    electric field $\mvec{E}$ is a \emph{vector} while the magnetic
+    field $\mvec{B}$ is a \emph{bivector} (this is disguised in the
+    usual formulations of Maxwell equations).
+  \item (In spacetime formulations the complete electromagnetic field
+    is represented as a single bivector in 4D space-time).
+  \item The fact that we are dealing with two objects of
+    \emph{different} geometric types indicates that the discrete
+    Maxwell equations should also inherit this somehow.
+  \item The Yee algorithm, often called the \emph{finite-difference
+      time-domain} algorithm is the most successful (and simple)
+    algorithm that accounts of this geometric structure. It is
+    implemented in most PIC codes, though recent research has focused
+    on structure preserving finite-element and other methods.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \begin{figure}
+    \incfig{Yee-cube.png}
+    \caption{Standard Yee-cell. Electric field components (vectors)
+      are located on edges while magnetic field components
+      (bivectors) are located on faces.}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \small%
+  On the Yee-cell the difference approximation to Maxwell equations
+  ``falls out'', almost like magic. The updates are staggered in time
+  and use two \emph{different} discrete curl operators:
+  \begin{align*}
+    \mvec{B}^{n+1/2} &= \mvec{B}^{n-1/2} - \Delta t\thinspace \nabla_E\times\mvec{E}^{n} \\    
+    \mvec{E}^{n+1} &= \mvec{E}^n + \Delta t/c^2\thinspace \nabla_F\times\mvec{B}^{n+1/2}
+  \end{align*}
+  Here the symbols $\nabla_F\times$ and $\nabla_E\times$ are the
+  discrete curl operators:
+  \begin{itemize}
+  \item The first takes \emph{face-centered} magnetic field and
+    computes it curl. This operator \emph{puts the result on cell
+      edges}.
+  \item The second takes \emph{edge-centered} electric field and
+    computes it curl. This operator \emph{puts the result on cell
+      faces}.
+  \item The structure of Yell-cell also indicates that \emph{currents}
+    must be co-located with the electric field and computed at half
+    time-steps.
+  \end{itemize}
+  This duality neatly reflects the underlying geometry of Maxwell
+  equations. The staggering in time reflects the fact that in 4D the
+  electromagnetic field is a bivector in spacetime.
+\end{frame}
+
+\begin{frame}{Divergence relations are exactly maintained}
+  \small%
+  We can show that the discrete Maxwell equations on a Yee-cell
+  maintain the divergence relations exactly:
+  \begin{align*}
+    \nabla_F\cdot\mvec{B}^{n+1/2} &= 0 \\
+    \nabla_E\cdot\mvec{E}^n &= 0.
+  \end{align*}
+  There is an additional constraint of Maxwell equations in a plasma,
+  that is, the current conservation:
+  \begin{align*}
+    \pfrac{\varrho_c}{t} + \nabla\cdot\mvec{J} = 0.
+  \end{align*}
+  where $\varrho_c$ is the charge density and $\mvec{J}$ is the
+  current density. On the Yell-cell this becomes
+  \begin{align*}
+    \frac{\varrho_c^{n+1}-\varrho_v^{n}}{\Delta t}
+    +
+    \nabla_E\cdot\mvec{J}^{n+1/2} = 0.    
+  \end{align*}
+  One must ensure that current from particles is computed carefully to
+  ensure that this expression is satified. See Esirkepov,
+  Comp. Phys. Communications, {\bf 135} 144-153 (2001).
+\end{frame}
+
+\begin{frame}{Maxwell equations are hyperbolic: large class of such
+    equations}
+
+  A vast class of partial differential equations are
+  \emph{hyperbolic}.
+  \begin{itemize}
+    \item Consider
+      \begin{align*}
+        \pfrac{\mvec{Q}}{t} + \pfrac{\mvec{F}}{x} = 0
+      \end{align*}
+      where $\mvec{Q}$ is a vector of \emph{conserved} quantities and
+      $\mvec{F} = \mvec{F}(\mvec{Q})$ is the vector of
+      \emph{fluxes}.
+    \item Compute the \emph{flux-jacobian}
+      \begin{align*}
+        \mvec{A} = \pfrac{\mvec{F}}{\mvec{Q}}.
+      \end{align*}
+    \item Now compute the eigenvalues and eigenvectors of
+      $\mvec{A}$. If these eigenvalues are \emph{real} and
+      eigenvectors are \emph{complete} then this system is called
+      \emph{hyperbolic}.
+    \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{Example 1: Maxwell equations}
+  \small
+  Consider the 1D source-free Maxwell equations
+  \begin{align*}
+    \frac{\partial }{\partial t}
+    \left[
+    \begin{matrix}
+      E_y \\
+      B_z
+    \end{matrix}
+    \right]
+    +
+    \frac{\partial }{\partial x}
+    \left[
+    \begin{matrix}
+      c^2B_z \\
+      E_y
+    \end{matrix}
+    \right]
+    =
+    0.
+  \end{align*}
+  The flux-jacobian is
+  \begin{align*}
+    \mvec{A} =
+    \left[
+    \begin{matrix}
+      0 & c^2 \\
+      1 & 0
+    \end{matrix}
+    \right]. 
+  \end{align*}
+  A simple calculation shows that the eigenvalues are $-c,c$ and
+  eigenvectors
+  \begin{align*}
+    \mvec{r}^1 =
+    \left[
+    \begin{matrix}
+      1 \\
+      -1/c
+    \end{matrix}
+    \right]
+    \qquad
+    \mvec{r}^2 =
+    \left[
+    \begin{matrix}
+      1 \\
+      1/c
+    \end{matrix}
+    \right].
+  \end{align*}
+\end{frame}
+
+\begin{frame}{Example 2: Euler equations}
+  \small Consider the ideal fluid equations (Euler equations)
+  \begin{align*}
+  \frac{\partial}{\partial{t}}
+  \left[
+    \begin{matrix}
+      \rho \\
+      \rho u \\
+      E
+    \end{matrix}
+  \right]
+  +
+  \frac{\partial}{\partial{x}}
+  \left[
+    \begin{matrix}
+      \rho u \\
+      \rho u^2 + p \\
+      (E+p)u
+    \end{matrix}
+  \right]
+  =
+  0
+  \end{align*}
+  Where, $E = \rho u^2/2 + p/(\gamma-1)$ is the fluid energy. This is
+  also hyperbolic, with eigenvalues $u \pm c_s$ where
+  $c_s = \sqrt{\gamma p/\rho}$ is the sound speed.%
+  \vskip0.1in%
+  Note that the Euler equations are a \emph{nonlinear} hyperbolic
+  system. Other examples: \emph{ideal MHD} equations, relativistic
+  fluid equations, Einstein field equation for gravitation, ...
+\end{frame}
+
+\begin{frame}{Hyperbolic problems need special methods to solve}
+  Major feature of hyperbolic equations are the existence of shocks
+  and other nonlinear features (rarefactions, compression waves,
+  contact discontinuities).
+
+  To handle these properly one needs to account for the structure of
+  the equation as revealed by the eigenvalues and eigenvectors.
+  \begin{itemize}
+  \item These \emph{shock capturing} methods were originally developed
+    in aerospace engineering literature to solve problems of transonic
+    and supersonic flight and reentry vehicles.
+  \item They are built around the concept of a \emph{Reimann solver}
+    that approximate the nonlinear structure at each cell interface.
+  \item In fusion physics, these are not yet widely used. However,
+    they are ubiquitous in astrophysical plasma physics.
+  \end{itemize}
+  Typically, the general belief is that the the evolution of the
+  plasma in a fusion machine is too slow to justify shock capturing
+  methods. 
+\end{frame}
+
+\begin{frame}{Maxwell equations}
+  \small
+  Consider the 1D source-free Maxwell equations
+  \begin{align*}
+    \frac{\partial }{\partial t}
+    \left[
+    \begin{matrix}
+      E_y \\
+      B_z
+    \end{matrix}
+    \right]
+    +
+    \frac{\partial }{\partial x}
+    \left[
+    \begin{matrix}
+      c^2B_z \\
+      E_y
+    \end{matrix}
+    \right]
+    =
+    0.
+  \end{align*}
+  Basic idea is to transform the equation into uncoupled advection
+  equations for the \emph{Riemann variables}. This is always possible
+  in 1D for \emph{linear hyperbolic} systems. For the above system,
+  multiply the second equation by $c$ and add and subtract from the
+  first equation to get
+  \begin{align*}
+    \frac{\partial }{\partial t}\left(E_y + c B_z\right) + c \frac{\partial }{\partial x}\left(E_y + c B_z\right) &= 0 \\
+    \frac{\partial }{\partial t}\left(E_y - c B_z\right) - c \frac{\partial }{\partial x}\left(E_y - c B_z\right) &= 0.
+  \end{align*}
+  Note that these are two uncoupled passive advection equations for
+  the variables $w^\pm = E_y \pm c B_z$ with advection speeds $\pm
+  c$.
+\end{frame}
+
+\begin{frame}{Finite-Volume method for Maxwell equations}
+  \small%
+  \begin{itemize}
+  \item Instead of using the Yee-cell one can solve Maxwell equations
+    using finite-volume methods developed in aerospace and fluid
+    mechanics.
+  \item In these schemes one uses the local characterstic direction to
+    ``upwind'' values at cell faces, adding stability to the scheme
+    when simulating small-scale features.
+  \item Finite-volume schemes are as cheap (or expensive) as Yell-cell
+    based FDTD schemes and are also easy to implement for Maxwell
+    equations. However, they suffer from some disadvantages.
+  \item First, it is very hard to ensure divergence relations are
+    maintained. One needs to correct the divergence errors somehow, by
+    adding some additional equations to the system.
+  \item Energy is not conserved by finite-volume schemes that use
+    upwinding. Special choices of basis-functions can be used to
+    construct energy conserving schemes, but these have other issues
+    (also shared by FDTD schemes).
+  \item However, in some situations, FV based Maxwell solvers are
+    useful and have been successfully applied in many large-scale
+    problems.
+  \end{itemize}
+\end{frame}  
+
+% ----------------------------------------------------------------  
+
+\begin{frame}{Choice of numerical fluxes for Maxwell equations impacts
+    energy conservation}
+
+  The electromagnetic energy is given by
+  \begin{align*}
+    \mathcal{E} = \frac{\epsilon_0}{2} E_y^2 + \frac{1}{2\mu_0} B_z^2
+  \end{align*}
+  Notice that this is the $L_2$ norm of the electromagnetic
+  field. 
+  \begin{itemize}
+  \item Hence, as we will show tomorrow, if we use upwinding to
+    compute numerical fluxes, the \emph{electromagnetic energy will
+      decay}.
+  \item If we use central fluxes (average left/right values) then the
+    EM energy will remain conserved by the \emph{time-continuous}
+    scheme. However, the Runge-Kutta time-stepping will add small
+    diffusion that will decay the total energy a little.
+  \item However, the energy decay rate will be \emph{independent} of
+    the spatial resolution and will reduce with smaller time-steps.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
+
+\end{document}
+
+
+\begin{frame}{}
+\end{frame}
+
+% ----------------------------------------------------------------
