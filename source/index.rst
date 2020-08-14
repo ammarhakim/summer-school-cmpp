@@ -439,6 +439,53 @@ originally developed in the aerospace community to solve for transonic
 and supersonic flows on airplanes and re-entry vehicles. They are
 widely used in astrophysics, but not so much in studying fusion
 plasmas.
+
+Petr Lax, a mathematician from NYU's Courant Institute won the `2005
+Abel Prize
+<https://www.nyu.edu/about/news-publications/news/2005/may/nyu_mathematician_peter_lax.html>`_
+(sort of "Noble Prize for Mathematics") in part for his contribution
+to the theory and computations of hyperbolic PDEs.
+
+A leading text-book on finite-volume methods to solve hyperbolic
+equations is by Randy LeVeque [LeVeque2002]_. His earlier "Green Book"
+[LeVeque1992]_ is a very good introduction to the mathematics of
+hyperbolic equations and somewhat better than the 2002 "Red Book".
+
+Lecture 4: Discontinuous Galerkin Schemes
+-----------------------------------------
+
+`PDF of Lecture 4 slides <./_static/lec4-2020.pdf>`_.
+
+Summary
+=======
+
+The discontinuous Galerkin method is a type of finite-element scheme
+in which the solution across cell boundaries can be discontinuous. The
+method was originally invented for elliptic equations by Nitsche in
+1971 (paper is in German). However, the key paper on application to a
+hyperbolic PDE was written by Reed and Hill in 1973. The latter paper
+has more than 2100 citations. A later key paper on extension of the
+method to nonlinear systems of equations was by Cockburn and Shu
+(JCP **41**, 199-224 1998).
+
+The key ingredient of DG is Galerkin minimization on a
+finite-dimensional *discontinuous* space. This space is usually
+piecewise continuous polynomials, but could be other types of
+functions too.
+
+I introduced the idea of weak-equality, which is central to a proper
+understanding of the DG scheme. This weak-equality concept, and idea
+of recovery built from it, can be used to construct schemes for both
+advection and diffusion equation that is higher-order accurate than
+standard DG in smooth regions. Some form of limited recovery is needed
+when the solution is not smooth.
+
+One can solve the full Vlasov-Maxwell equations using DG. See
+[Juno2019]_ for example. The scheme described there conserves energy
+exactly, but does not conserve momentum. This is a typical feature of
+solvers for Vlasov equations: one can *either* conserve momentum or
+energy but not both. The construction of a momentum *and* energy
+conserving scheme remains an ongoing research problem.
   
 References
 ----------
@@ -503,4 +550,8 @@ References
    mitigation". Physics of Plasmas, **22** (3),
    032504–18. http://doi.org/10.1063/1.4913582
 
+.. [LeVeque1992] R.J. LeVeque. "Numerical methods for conservation
+   laws". Birkhäuser, 1992.
    
+.. [LeVeque2002] R.J. LeVeque. "Finite volume methods for hyperbolic
+   problems". Cambridge University Press, 2002. 
