@@ -474,19 +474,24 @@
 \end{frame}
 
 \begin{frame}{The Boris algorithm for the staggered scheme}
+  \small%
   How to do the rotation? The Boris algorithm does this in several
   steps:
   \begin{itemize}
   \item Compute the $\mvec{t}$ and $\mvec{s}$ vectors as follows
     \begin{align*}
-      \mvec{t} &= \frac{q\mvec{B}}{m}\frac{\Delta t}{2} \\
+      \mvec{t} &= \tan\left( \frac{qB}{2m}\Delta t \right) \frac{\mvec{B}}{B}
+                 \approx \frac{q\mvec{B}}{m}\frac{\Delta t}{2} \\
       \mvec{s} &= \frac{2\mvec{t}}{1+|\mvec{t}|^2}
     \end{align*}
   \item Compute $\mvec{v}' = \mvec{v}^- + \mvec{v}^-\times\mvec{t}$
     and finally $\mvec{v}^+ = \mvec{v}^-+\mvec{v}'\times\mvec{s}$.
   \end{itemize}
   See Birdsall and Langdon text book Section 4-3 and 4-4 and figure
-  4-4a. Easily extended to relativistic case.%
+  4-4a. Easily extended to relativistic case. Note that using the
+  approxiate form in computing $\mvec{t}$ will lead to \emph{an error
+    in the gyroangle}. This error will \emph{not show up if we use
+    velocity update formulas} shown in the last slide, though. %
   \vskip0.1in%
   Note that in the absence of an electric field the Boris algorithm
   conserves kinetic energy.
