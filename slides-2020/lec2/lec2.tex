@@ -480,7 +480,7 @@
   \begin{itemize}
   \item Compute the $\mvec{t}$ and $\mvec{s}$ vectors as follows
     \begin{align*}
-      \mvec{t} &= \tan\left( \frac{qB}{2m}\Delta t \right) \frac{\mvec{B}}{B}
+      \mvec{t} &= \tan\left( \frac{qB}{m}\frac{\Delta t}{2} \right) \frac{\mvec{B}}{B}
                  \approx \frac{q\mvec{B}}{m}\frac{\Delta t}{2} \\
       \mvec{s} &= \frac{2\mvec{t}}{1+|\mvec{t}|^2}
     \end{align*}
@@ -521,6 +521,40 @@
     higher than other time-scales in the system. Common in most
     magnetized plasmas.
   \end{itemize}  
+\end{frame}
+
+% ----------------------------------------------------------------
+
+\begin{frame}{Appendix: Find $\mvec{A}$ if
+    $\mvec{A} = \mvec{R}+\mvec{A}\times\mvec{B}$}
+  \small%
+  Take the cross-product with $\mvec{B}$:
+  \begin{align*}
+    \mvec{A}\times\mvec{B}=\mvec{R}\times\mvec{B}+(\mvec{A}\times\mvec{B})\times\mvec{B}
+  \end{align*}
+  Use
+  $\mvec{A}\times(\mvec{B}\times\mvec{C}) =
+  (\mvec{C}\times\mvec{B})\times\mvec{A} =
+  (\mvec{A}\cdot\mvec{C})\mvec{B}- (\mvec{A}\cdot\mvec{B})\mvec{C}$ to
+  write
+  \begin{align*}
+    (\mvec{A}\times\mvec{B})\times\mvec{B} = (\mvec{B}\cdot\mvec{A})\mvec{B} - B^2\mvec{A}
+  \end{align*}
+  to get
+  \begin{align*}
+    \mvec{A}\times\mvec{B}=\mvec{R}\times\mvec{B}
+    +
+    (\mvec{B}\cdot\mvec{A})\mvec{B} - B^2\mvec{A}.
+  \end{align*}
+  From the original equation we have
+  $\mvec{A}\times\mvec{B}=\mvec{A}-\mvec{R}$ and
+  $\mvec{B}\cdot\mvec{A}=\mvec{B}\cdot\mvec{R}$.  Plugging these into
+  the last expression we finally get
+  \begin{align*}
+    \mvec{A} = \frac{\mvec{R}+\mvec{R}\times\mvec{B} + (\mvec{B}\cdot\mvec{R})\mvec{B}}{1+B^2}.
+  \end{align*}
+  One can use this to find an explicit expression for the velocity
+  update in the Boris scheme.
 \end{frame}
 
 % ----------------------------------------------------------------
