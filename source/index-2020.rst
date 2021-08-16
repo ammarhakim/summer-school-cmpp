@@ -3,7 +3,7 @@ Computational Methods in Plasma Physics 2020
 
 These are notes, lecture slides and code for use in `PPPL
 <https://www.pppl.gov>`_'s `Graduate Summer School
-<https://gss.pppl.gov/2021/>`_, Computational Methods in Plasma
+<https://gss.pppl.gov/2020/>`_, Computational Methods in Plasma
 Physics mini-course. All material is copyrighted by Ammar Hakim and
 released under the `Creative Commons CC BY License
 <https://creativecommons.org/licenses/>`_.
@@ -119,6 +119,7 @@ Lecture 1: Introduction and the Big-Picture
 -------------------------------------------
 
 `PDF of Lecture 1 slides <./_static/lec1-2020.pdf>`_
+
 
 Summary
 =======
@@ -275,6 +276,216 @@ These are only selection of problems I am directly familiar with. I
 hope it gives you a flavor and understanding why computational plasma
 physics is such a serious and important field!
 
+Lecture 2: Special ODE Integrators, FDTD Scheme
+-----------------------------------------------
+
+`PDF of Lecture 2 slides <./_static/lec2-2020.pdf>`_
+
+Designing ODE solvers
+=====================
+
+The concept of phase-space volume preserving and symplectic schemes
+can be more easily understood by looking at the example of a simple
+harmonic oscillator
+
+.. math::
+
+   \frac{d^2z}{dt^2} = -\omega^2 z
+
+where :math:`\omega` is the oscillation frequency.
+
+To fully understand the physics behind these concepts one needs to
+understand the *Lagrangian and Hamiltonian formulation* of
+mechanics. For example, see text book of `Goldstein
+<https://www.amazon.com/Classical-Mechanics-Pearson-New-International/dp/1292026553>`_
+or first volume of `Landau and Lifshitz, Mechanics
+<https://archive.org/details/Mechanics_541>`_. An overview of
+Hamiltonian mechanics using *noncanonical coordinates* as applied to
+single particle motion is given in Section II of [CaryBrizard2009]_.
+
+A good description of various ODE solvers and their properties is
+given in Chapter 2 of [DurranBook]_. Also `see
+<https://gkeyll.readthedocs.io/en/latest/dev/ssp-rk.html>`_ for
+formulas of the Strong-Stability preserving RK methods and their
+stability regions.
+
+Several ODE schemes have been designed to handle stiff sources and in
+particular, diffusion terms arising from discretization of diffusion
+equations. See [Abdulle2013]_ and also [Meyer2013]_ for description of
+these schemes. In particular, the scheme by Meyer at al is to be
+preferred to it superior stability properties.
+
+The ODE solvers described above are low order, that is second or third
+order. Some recent work attempts to construct very high order schemes
+(10-15th order!) that essentially makes the issues of conservation and
+other numerical errors mostly moot. For example, see [ReinSpiegel]_
+for a 15th order scheme for use in gravitational N-body
+simulations. Such very high-order schemes have not found use in
+plasma-physics yet, mainly as the Maxwell solvers used in PIC codes
+are mostly second-order anyway. However, it is possible that these
+very high-order methods are useful in orbit codes.
+
+Particles in an electromagnetic field, FDTD methods
+===================================================
+
+Particle-in-cell methods are based on pushing macro-particles. These
+represent the motion of characteristics in phase-space, along which
+the distribution function is conserved. The macro-particle
+equations-of-motion are
+
+.. math::
+
+   \frac{d\mathbf{x}}{dt} &= \mathbf{v} \\
+   \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
+
+The most widely used method to solve this system of ODEs is the *Boris
+algorithm*. See `this excerpt
+<./_static/Birdsall-Landon-Boris-Push.pdf>`_ from Birdsall and Langdon
+book for details on how to implement this efficiently.
+
+The Boris algorithm is surprisingly good: it is a *second-order*,
+*time-centered* method that *conserves phase-space volume*. However,
+the error in phase-velocity (that is there is an error in time-period
+of orbits) accumulates *linearly*, as we saw for the harmonic
+oscillator. See [Qin2013]_ for proofs that the Boris algorithm is
+*not* symplectic but conserves phase-space volume.
+
+The relativistic Boris algorithm does not compute the correct
+:math:`\mathbf{E}\times\mathbf{B}` velocity. This can be corrected for
+and still maintain the volume-preserving property and was done in
+[HigueraCary2017]_.
+
+The Yee-cell preserves the underlying geometric structure of Maxwell
+equations, and ensures that the divergence relations are maintained in
+the case of vacuum fields. In a plasma, however, current deposition
+needs to be done carefully to ensure current continuity is
+satisfied. See [Esirkepov2001]_, for example.
+
+For extension of standard FDTD method to complex geometries, see, for
+example [Nieter2009]_ and other references. Recent research has
+focused on developing finite-element based PIC codes (that maintain
+geometric structure of Maxwell equations), but these are usually very
+expensive to run and very complex to develop.
+
+Sometimes finite-volume schemes are also used to solve Maxwell
+equations. These may have some advantages and disadvantages compared
+to standard FDTD schemes. For example, FV usually do not conserve
+energy and find it hard to satisfy divergence relations. For a
+comparison of FV and FDTD methods see `this page
+<http://ammar-hakim.org/sj/je/je6/je6-maxwell-solvers.html>`_.
+
+A comprehensive review of structure preserving algorithms for use in
+plasma physics is provided by [Morrison2017]_. It has numerous
+references to the literature and should be consulted to develop a
+detailed understanding of such schemes.
+
+Lecture 3: FDTD Scheme for Maxwell equations, hyperbolic equations
+------------------------------------------------------------------
+
+`PDF of Lecture 3 slides <./_static/lec3-2020.pdf>`_
+
+Solving Maxwell equations with FDTD scheme
+==========================================
+
+The Yee-cell preserves the underlying geometric structure of Maxwell
+equations, and ensures that the divergence relations are maintained in
+the case of vacuum fields. In essence, the electric field is a
+*vector* quantity (associated with lines) while the magnetic field is
+a *bi-vector* quantity (associated with surfaces). Hence, the most
+natural representation on a discrete grid utilizes this geometric fact
+to build a consistent scheme.
+
+To couple the plasma to the field currents and charges need to be
+"deposited" on the grid in a careful manner. Current continuity needs
+to be satisfied. See [Esirkepov2001]_, for example.
+
+For extension of standard FDTD method to complex geometries, see, for
+example [Nieter2009]_ and other references. Recent research has
+focused on developing finite-element based PIC codes (that maintain
+geometric structure of Maxwell equations), but these are usually very
+expensive to run and very complex to develop.
+
+Sometimes finite-volume schemes are also used to solve Maxwell
+equations. These may have some advantages and disadvantages compared
+to standard FDTD schemes. For example, FV usually do not conserve
+energy and find it hard to satisfy divergence relations. For a
+comparison of FV and FDTD methods see `this page
+<http://ammar-hakim.org/sj/je/je6/je6-maxwell-solvers.html>`_.
+
+A comprehensive review of structure preserving algorithms for use in
+plasma physics is provided by [Morrison2017]_. It has numerous
+references to the literature and should be consulted to develop a
+detailed understanding of such schemes.
+
+The literature on geometric and Lagrangian and Hamiltonian methods is
+difficult for most plasma physicist to understand. The classic Dover
+textbook by Lovelock and Rund `"Tensors, Differential Forms, and
+Variational Principles"
+<https://www.amazon.com/Tensors-Differential-Variational-Principles-Mathematics/dp/0486658406>`_.
+
+Hyperbolic equations
+====================
+
+Hyperbolic equations describe a broad class of physical problems and
+are essentially characterized by finite propagation speed of
+disturbances. Examples of hyperbolic equations include Maxwell
+equations, Euler equations for ideal fluids and ideal MHD equations.
+
+To solve hyperbolic equations one needs to use special methods, in
+particular when shocks and other nonlinear phenomena are present
+(rarefaction waves, contact discontinuities, compression waves). These
+methods go by the name of "shock capturing schemes" and were
+originally developed in the aerospace community to solve for transonic
+and supersonic flows on airplanes and re-entry vehicles. They are
+widely used in astrophysics, but not so much in studying fusion
+plasmas.
+
+Petr Lax, a mathematician from NYU's Courant Institute won the `2005
+Abel Prize
+<https://www.nyu.edu/about/news-publications/news/2005/may/nyu_mathematician_peter_lax.html>`_
+(sort of "Noble Prize for Mathematics") in part for his contribution
+to the theory and computations of hyperbolic PDEs.
+
+A leading text-book on finite-volume methods to solve hyperbolic
+equations is by Randy LeVeque [LeVeque2002]_. His earlier "Green Book"
+[LeVeque1992]_ is a very good introduction to the mathematics of
+hyperbolic equations and somewhat better than the 2002 "Red Book".
+
+Lecture 4: Discontinuous Galerkin Schemes
+-----------------------------------------
+
+`PDF of Lecture 4 slides <./_static/lec4-2020.pdf>`_.
+
+Summary
+=======
+
+The discontinuous Galerkin method is a type of finite-element scheme
+in which the solution across cell boundaries can be discontinuous. The
+method was originally invented for elliptic equations by Nitsche in
+1971 (paper is in German). However, the key paper on application to a
+hyperbolic PDE was written by Reed and Hill in 1973. The latter paper
+has more than 2100 citations. A later key paper on extension of the
+method to nonlinear systems of equations was by Cockburn and Shu
+(JCP **41**, 199-224 1998).
+
+The key ingredient of DG is Galerkin minimization on a
+finite-dimensional *discontinuous* space. This space is usually
+piecewise continuous polynomials, but could be other types of
+functions too.
+
+I introduced the idea of weak-equality, which is central to a proper
+understanding of the DG scheme. This weak-equality concept, and idea
+of recovery built from it, can be used to construct schemes for both
+advection and diffusion equation that is higher-order accurate than
+standard DG in smooth regions. Some form of limited recovery is needed
+when the solution is not smooth.
+
+One can solve the full Vlasov-Maxwell equations using DG. See
+[Juno2019]_ for example. The scheme described there conserves energy
+exactly, but does not conserve momentum. This is a typical feature of
+solvers for Vlasov equations: one can *either* conserve momentum or
+energy but not both. The construction of a momentum *and* energy
+conserving scheme remains an ongoing research problem.
   
 References
 ----------
