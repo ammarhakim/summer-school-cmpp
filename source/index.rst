@@ -93,27 +93,12 @@ literature for solvers for ordinary differential equations (ODEs) and
 partial differential equations (PDEs), with emphasis of those
 techniques that are useful in plasma physics.
 
-Github repo for lectures and code
----------------------------------
+Github repo for lectures
+------------------------
 
 You can get all the tex files for the slides, source for this website
 and the code I ran in class by cloning the `Github repo
 <https://github.com/ammarhakim/summer-school-cmpp>`_ for this class.
-
-To run the code you need to install the Gkeyll software. Please see
-the `Gkeyll website <http://gkeyll.readthedocs.io>`_ for instructions
-on how to get the code and the postprocessing tools needed. In brief:
-
-- Install the Python `(mini)conda <https://conda.io/miniconda.html>`_
-  package manager
-  
-- Install the Gkeyll code using::
-
-    conda install -c gkyl gkeyll
-
-- Install the postprocessing tool as::
-
-    conda install -c gkyl postgkyl
 
 Lecture 1: Introduction and the Big-Picture
 -------------------------------------------
@@ -193,7 +178,65 @@ These **Billion Dollar Questions** need huge investments in
 experimental and observational programs as well as the very latest in
 computational physics research.
 
-Space Physics Examples: Parker Solar Probe
+**Fusion Physics Examples: Building a working thermonuclear fusion reactor.**
+
+Nuclear reactors (both fission and fusion) are the only power-source
+(besides fossil-fules) that can supply uninterupped and cheap
+power. No working or prototype fusion power plant exists as of today.
+
+- The `Iter project <https://www.iter.org>`_ aims to build the world's
+  largest tokamak, a "magnetic bottle" to contain super-hot plasma and
+  heat it to ignition temperatures.
+
+There are other major fusion efforts around the world:
+
+- `Beautiful stellarators <https://www.ipp.mpg.de/w7x>`_ (and `Wiki
+  article <https://en.wikipedia.org/wiki/Wendelstein_7-X>`_) that may
+  have better properties than tokamaks and provide a faster route to
+  fusion energy
+
+- `High-field based compact tokamaks
+  <https://www.psfc.mit.edu/sparc>`_; `field-reversed configurations
+  <https://tae.com>`_;
+
+- Other alternate concepts: Field-reversed configurations (FRCs), both
+  pulsed and continuous. (`TAE Technologies <https://tae.com/>`_,
+  `Helion <https://www.helionenergy.com/`_)
+
+- Plasma Mirrors: High-field mirrors (WHAM at U. Wisconsin) and
+  rotating mirrors (U. Maryland).
+
+- Z-pinches based concept: (`ZEI <https://www.zapenergyinc.com/>`_
+
+There are major unsolved problems in the basic physics of fusion
+machines. Most of these can only be answered by large-scale computing
+and much of the numerical tools have not yet been fully developed.
+
+The `Scientific Discovery through Advanced Computing
+<https://www.scidac.org/partnerships/fusion-energy.html>`_ program in
+fusion has large projects that address the very serious **Billion
+Dollar Question**: will controlled fusion be eventually possible?
+
+- The numerics research here is focused on gyrokinetic and even full
+  kinetic understanding of fundamental turbulence and transport
+  processes in the tokamak. **These equations are very difficult to
+  solve!**
+
+- Disruptions are dangerous processes that can "kill" certain fusion
+  machine: large-scale MHD simulations are needed. Significant new
+  research is being done in new numerical methods and application of
+  existing MHD codes to such problems.
+
+- Runaway electrons (relativistic high-energy electron beams) can
+  drill holes in fusion machines. See `SCREAM project
+  <https://scream.pppl.gov>`_ and `special PPCF issue
+  <https://iopscience.iop.org/journal/0741-3335/page/Special-Issue-on-Runaway-Electrons>`_.
+
+- Very serious! **Will need huge kinetic calculations**. Also, the
+  formulation of self-consistent coupling between the runaway electrons
+  and MHD is not complete. See review by [Boozer2015]_.
+
+**Space Physics Examples: Parker Solar Probe**
 
 - `Paker Solar Probe
   <https://www.nasa.gov/content/goddard/parker-solar-probe>`_. "The
@@ -225,51 +268,16 @@ Many other missions are active and planned: `BepiColombo
   impossible. **How to incorporate some kinetic effects into fluid
   models?**
 
-Fusion Physics Examples: Building a working thermonuclear fusion reactor.
+**Extreme Plasma Astrophysics**
 
-- The `Iter project <https://www.iter.org>`_ aims to build the world's
-  largest tokamak, a "magnetic bottle" to contain super-hot plasma and
-  heat it to ignition temperatures.
+An emerging field of plasma physics is the study of the plasma
+environment around compact astrophysical objects (neutron stars,
+black-holes). See for example: http://kyleparfrey.org/
 
-There are other major fusion efforts around the world:
-
-- `Beautiful stellarators <https://www.ipp.mpg.de/w7x>`_ (and `Wiki
-  article <https://en.wikipedia.org/wiki/Wendelstein_7-X>`_) that may
-  have better properties than tokamaks and provide a faster route to
-  fusion energy
-
-- `High-field based compact tokamaks
-  <https://www.psfc.mit.edu/sparc>`_; `field-reversed configurations
-  <https://tae.com>`_; spinning magnetic mirror machines; etc
-
-
-There are major unsolved problems in the basic physics of fusion
-machines. Most of these can only be answered by large-scale computing
-and much of the numerical tools have not yet been fully developed.
-
-The `Scientific Discovery through Advanced Computing
-<https://www.scidac.org/partnerships/fusion-energy.html>`_ program in
-fusion has large projects that address the very serious **Billion
-Dollar Question**: will controlled fusion be eventually possible?
-
-- The numerics research here is focused on gyrokinetic and even full
-  kinetic understanding of fundamental turbulence and transport
-  processes in the tokamak. **These equations are very difficult to
-  solve!**
-
-- Disruptions are dangerous processes that can "kill" certain fusion
-  machine: large-scale MHD simulations are needed. Significant new
-  research is being done in new numerical methods and application of
-  existing MHD codes to such problems.
-
-- Runaway electrons (relativistic high-energy electron beams) can
-  drill holes in fusion machines. See `SCREAM project
-  <https://scream.pppl.gov>`_ and `special PPCF issue
-  <https://iopscience.iop.org/journal/0741-3335/page/Special-Issue-on-Runaway-Electrons>`_.
-
-- Very serious! **Will need huge kinetic calculations**. Also, the
-  formulation of self-consistent coupling between the runaway electrons
-  and MHD is not complete. See review by [Boozer2015]_.
+This is an extremely challenging field: need to incorporate General
+Relativistic effects into plasma equations. Coupling between
+gravitational effects and plasma leads to extremely energetic
+events. releasing huge amounts of energy.
 
 These are only selection of problems I am directly familiar with. I
 hope it gives you a flavor and understanding why computational plasma
