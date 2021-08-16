@@ -179,6 +179,7 @@ experimental and observational programs as well as the very latest in
 computational physics research.
 
 **Fusion Physics Examples: Building a working thermonuclear fusion reactor.**
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Nuclear reactors (both fission and fusion) are the only power-source
 (besides fossil-fules) that can supply uninterupped and cheap
@@ -236,7 +237,8 @@ Dollar Question**: will controlled fusion be eventually possible?
   formulation of self-consistent coupling between the runaway electrons
   and MHD is not complete. See review by [Boozer2015]_.
 
-**Space Physics Examples: Parker Solar Probe**
+**Space Physics Examples**
++++++++++++++++++++++++++++
 
 - `Paker Solar Probe
   <https://www.nasa.gov/content/goddard/parker-solar-probe>`_. "The
@@ -269,6 +271,7 @@ Many other missions are active and planned: `BepiColombo
   models?**
 
 **Extreme Plasma Astrophysics**
++++++++++++++++++++++++++++++++
 
 An emerging field of plasma physics is the study of the plasma
 environment around compact astrophysical objects (neutron stars,
