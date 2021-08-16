@@ -103,7 +103,7 @@ and the code I ran in class by cloning the `Github repo
 Lecture 1: Introduction and the Big-Picture
 -------------------------------------------
 
-`PDF of Lecture 1 slides <./_static/lec1-2020.pdf>`_
+`PDF of Lecture 1 slides <./_static/lec1-2021.pdf>`_
 
 Summary
 =======
@@ -282,7 +282,6 @@ events. releasing huge amounts of energy.
 These are only selection of problems I am directly familiar with. I
 hope it gives you a flavor and understanding why computational plasma
 physics is such a serious and important field!
-
   
 References
 ----------
