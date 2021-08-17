@@ -202,12 +202,12 @@ There are other major fusion efforts around the world:
 
 - Other alternate concepts: Field-reversed configurations (FRCs), both
   pulsed and continuous. (`TAE Technologies <https://tae.com/>`_,
-  `Helion <https://www.helionenergy.com/`_)
+  `Helion <https://www.helionenergy.com>`_)
 
 - Plasma Mirrors: High-field mirrors (WHAM at U. Wisconsin) and
   rotating mirrors (U. Maryland).
 
-- Z-pinches based concept: (`ZEI <https://www.zapenergyinc.com/>`_
+- Z-pinches based concept: `ZEI <https://www.zapenergyinc.com/>`_
 
 There are major unsolved problems in the basic physics of fusion
 machines. Most of these can only be answered by large-scale computing
@@ -286,6 +286,109 @@ events. releasing huge amounts of energy.
 These are only selection of problems I am directly familiar with. I
 hope it gives you a flavor and understanding why computational plasma
 physics is such a serious and important field!
+
+Lecture 2: Special ODE Integrators, FDTD Scheme
+-----------------------------------------------
+
+`PDF of Lecture 2 slides <./_static/lec2-2021.pdf>`_
+
+Designing ODE solvers
+=====================
+
+The concept of phase-space volume preserving and symplectic schemes
+can be more easily understood by looking at the example of a simple
+harmonic oscillator
+
+.. math::
+
+   \frac{d^2z}{dt^2} = -\omega^2 z
+
+where :math:`\omega` is the oscillation frequency.
+
+To fully understand the physics behind these concepts one needs to
+understand the *Lagrangian and Hamiltonian formulation* of
+mechanics. For example, see text book of `Goldstein
+<https://www.amazon.com/Classical-Mechanics-Pearson-New-International/dp/1292026553>`_
+or first volume of `Landau and Lifshitz, Mechanics
+<https://archive.org/details/Mechanics_541>`_. An overview of
+Hamiltonian mechanics using *noncanonical coordinates* as applied to
+single particle motion is given in Section II of [CaryBrizard2009]_.
+
+A good description of various ODE solvers and their properties is
+given in Chapter 2 of [DurranBook]_. Also `see
+<https://gkeyll.readthedocs.io/en/latest/dev/ssp-rk.html>`_ for
+formulas of the Strong-Stability preserving RK methods and their
+stability regions.
+
+Several ODE schemes have been designed to handle stiff sources and in
+particular, diffusion terms arising from discretization of diffusion
+equations. See [Abdulle2013]_ and also [Meyer2013]_ for description of
+these schemes. In particular, the scheme by Meyer at al is to be
+preferred to it superior stability properties.
+
+The ODE solvers described above are low order, that is second or third
+order. Some recent work attempts to construct very high order schemes
+(10-15th order!) that essentially makes the issues of conservation and
+other numerical errors mostly moot. For example, see [ReinSpiegel]_
+for a 15th order scheme for use in gravitational N-body
+simulations. Such very high-order schemes have not found use in
+plasma-physics yet, mainly as the Maxwell solvers used in PIC codes
+are mostly second-order anyway. However, it is possible that these
+very high-order methods are useful in orbit codes.
+
+Particles in an electromagnetic field, FDTD methods
+===================================================
+
+Particle-in-cell methods are based on pushing macro-particles. These
+represent the motion of characteristics in phase-space, along which
+the distribution function is conserved. The macro-particle
+equations-of-motion are
+
+.. math::
+
+   \frac{d\mathbf{x}}{dt} &= \mathbf{v} \\
+   \frac{d\mathbf{v}}{dt} &= \frac{q}{m}(\mathbf{E} + \mathbf{v}\times\mathbf{B})
+
+The most widely used method to solve this system of ODEs is the *Boris
+algorithm*. See `this excerpt
+<./_static/Birdsall-Landon-Boris-Push.pdf>`_ from Birdsall and Langdon
+book for details on how to implement this efficiently.
+
+The Boris algorithm is surprisingly good: it is a *second-order*,
+*time-centered* method that *conserves phase-space volume*. However,
+the error in phase-velocity (that is there is an error in time-period
+of orbits) accumulates *linearly*, as we saw for the harmonic
+oscillator. See [Qin2013]_ for proofs that the Boris algorithm is
+*not* symplectic but conserves phase-space volume.
+
+The relativistic Boris algorithm does not compute the correct
+:math:`\mathbf{E}\times\mathbf{B}` velocity. This can be corrected for
+and still maintain the volume-preserving property and was done in
+[HigueraCary2017]_.
+
+The Yee-cell preserves the underlying geometric structure of Maxwell
+equations, and ensures that the divergence relations are maintained in
+the case of vacuum fields. In a plasma, however, current deposition
+needs to be done carefully to ensure current continuity is
+satisfied. See [Esirkepov2001]_, for example.
+
+For extension of standard FDTD method to complex geometries, see, for
+example [Nieter2009]_ and other references. Recent research has
+focused on developing finite-element based PIC codes (that maintain
+geometric structure of Maxwell equations), but these are usually very
+expensive to run and very complex to develop.
+
+Sometimes finite-volume schemes are also used to solve Maxwell
+equations. These may have some advantages and disadvantages compared
+to standard FDTD schemes. For example, FV usually do not conserve
+energy and find it hard to satisfy divergence relations. For a
+comparison of FV and FDTD methods see `this page
+<http://ammar-hakim.org/sj/je/je6/je6-maxwell-solvers.html>`_.
+
+A comprehensive review of structure preserving algorithms for use in
+plasma physics is provided by [Morrison2017]_. It has numerous
+references to the literature and should be consulted to develop a
+detailed understanding of such schemes.
   
 References
 ----------
