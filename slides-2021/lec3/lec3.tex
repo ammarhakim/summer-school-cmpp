@@ -1,0 +1,570 @@
+\documentclass[aspectratio=169]{beamer}
+%\documentclass[aspectratio=43]{beamer}
+
+\usepackage{graphicx}  % Required for including images
+\usepackage{natbib}
+\usepackage{booktabs} % Top and bottom rules for tables
+\usepackage{amssymb,amsthm,amsmath}
+\usepackage{exscale}
+\usepackage{natbib}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{animate}
+\usepackage{bm}
+\usepackage{etoolbox}
+
+% Setup TikZ
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+% Setup hyperref
+\usepackage{hyperref}
+\hypersetup{colorlinks=true}
+\hypersetup{citecolor=porange}
+\hypersetup{urlcolor=porange!80!}
+\hypersetup{linkcolor=porange}
+
+%% Writing quarters
+\newcommand{\wQ}[1]{{\textcolor{white}{Q#1}}}
+\newcommand{\bQ}[1]{{Q#1}}
+
+% Uncomment appropriate command to disable/enable hiding
+%\newcommand{\mypause}{\pause}
+\newcommand{\mypause}{}
+\newcommand{\myb}[1]{{\color{blue} {#1}}}
+
+%% Commonly used macros
+\newcommand{\eqr}[1]{Eq.\thinspace(#1)}
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pfracc}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pfraca}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\pfracb}[2]{\partial #1/\partial #2}
+\newcommand{\pfracbb}[2]{\partial^2 #1/\partial #2^2}
+\newcommand{\spfrac}[2]{{\partial_{#1}} {#2}}
+\newcommand{\mvec}[1]{\mathbf{#1}}
+\newcommand{\gvec}[1]{\boldsymbol{#1}}
+\newcommand{\script}[1]{\mathpzc{#1}}
+\newcommand{\eep}{\mvec{e}_\phi}
+\newcommand{\eer}{\mvec{e}_r}
+\newcommand{\eez}{\mvec{e}_z}
+\newcommand{\iprod}[2]{\langle{#1}\rangle_{#2}}
+
+\newcommand{\gcs}{\nabla_{\mvec{x}}}
+\newcommand{\gvs}{\nabla_{\mvec{v}}}
+\newcommand{\gps}{\nabla_{\mvec{z}}}
+\newcommand{\dtv}{\thinspace d^3\mvec{v}}
+\newcommand{\dtx}{\thinspace d^3\mvec{x}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{remark}{Remark}
+
+\newtheorem{proposition}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}
+%\newtheorem{thm}{Theorem}
+\newtheorem{proposed}{Proposed Answer}
+\DeclareMathOperator{\spn}{span}
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+%% Autoscaled figures
+\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.9\linewidth,keepaspectratio}
+
+%Make the items smaller
+\newcommand{\cramplist}{
+	\setlength{\itemsep}{0in}
+	\setlength{\partopsep}{0in}
+	\setlength{\topsep}{0in}}
+\newcommand{\cramp}{\setlength{\parskip}{.5\parskip}}
+\newcommand{\zapspace}{\topsep=0pt\partopsep=0pt\itemsep=0pt\parskip=0pt}
+
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
+
+\usetheme[bullet=circle,% Use circles instead of squares for bullets.
+          titleline=true,% Show a line below the frame title.
+          ]{Princeton}
+
+\title[{\tt }]{Solving Maxwell Equations and Intro to Hyperbolic PDEs}%
+\author[http://cmpp.rtfd.io]%
+{Ammar H. Hakim ({\tt ammar@princeton.edu}) \inst{1}}%
+
+\institute[PPPL]
+{ \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
+}
+
+\date[8/18/2021]{PPPL Graduate Summer School, 2021}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \small%
+  Besides pushing particles in electromagnetic fields, we need to
+  compute these fields self-consistently from currents and charges by
+  solving Maxwell equations. First consider Maxwell equations in
+  vacuum:
+  \begin{align*}
+    \frac{\partial \mvec{B}}{\partial t} + \nabla\times\mvec{E} &= 0 \\
+    \epsilon_0\mu_0\frac{\partial \mvec{E}}{\partial t} -
+    \nabla\times\mvec{B} &= 0
+  \end{align*}
+  For these we have the conservation laws
+  \begin{align*}
+    \frac{d}{dt} \int_\Omega \mvec{E}\times\mvec{B}  \dtx &= 0 \\
+    \frac{d}{dt} \int_\Omega \left( \frac{\epsilon_0}{2} |\mvec{E}|^2 + \frac{1}{2\mu_0} |\mvec{B}|^2 \right) \dtx &= 0.
+  \end{align*}
+  Note these are \emph{global} conservation laws and one can instead
+  also write \emph{local} conservation laws that include momentum and
+  energy flux terms. How to solve these equations efficiently and
+  maintain (some) conservation and geometric properties?
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations}
+  \begin{itemize}
+  \item Maxwell equations have a very special geometric structure. The
+    electric field $\mvec{E}$ is a \emph{vector} while the magnetic
+    field $\mvec{B}$ is a \emph{bivector} (this is disguised in the
+    usual formulations of Maxwell equations).
+  \item (In spacetime formulations the complete electromagnetic field
+    is represented as a single bivector in 4D space-time).
+  \item The fact that we are dealing with two objects of
+    \emph{different} geometric types indicates that the discrete
+    Maxwell equations should also inherit this somehow.
+  \item The Yee algorithm, often called the \emph{finite-difference
+      time-domain} algorithm is the most successful (and simple)
+    algorithm that accounts of this geometric structure. It is
+    implemented in most PIC codes, though recent research has focused
+    on structure preserving finite-element and other methods.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \begin{figure}
+    \setkeys{Gin}{width=0.5\linewidth,keepaspectratio}
+    \incfig{Yee-cube.png}
+    \caption{Standard Yee-cell. Electric field components (vectors)
+      are located on edges while magnetic field components
+      (bivectors) are located on faces.}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Solving Maxwell equations: The Yee-cell}
+  \small%
+  On the Yee-cell the difference approximation to Maxwell equations
+  ``falls out'', almost like magic. The updates are staggered in time
+  and use two \emph{different} discrete curl operators:
+  \begin{align*}
+    \mvec{B}^{n+1/2} &= \mvec{B}^{n-1/2} - \Delta t\thinspace \nabla_E\times\mvec{E}^{n} \\    
+    \mvec{E}^{n+1} &= \mvec{E}^n + \Delta t/c^2\thinspace \nabla_F\times\mvec{B}^{n+1/2}
+  \end{align*}
+  Here the symbols $\nabla_F\times$ and $\nabla_E\times$ are the
+  discrete curl operators:
+  \begin{itemize}
+  \item The first takes \emph{face-centered} magnetic field and
+    computes it curl. This operator \emph{puts the result on cell
+      edges}.
+  \item The second takes \emph{edge-centered} electric field and
+    computes it curl. This operator \emph{puts the result on cell
+      faces}.
+  \item The structure of Yell-cell also indicates that \emph{currents}
+    must be co-located with the electric field and computed at half
+    time-steps.
+  \end{itemize}
+  This duality neatly reflects the underlying geometry of Maxwell
+  equations. The staggering in time reflects the fact that in 4D the
+  electromagnetic field is a bivector in spacetime.
+\end{frame}
+
+\begin{frame}{Divergence relations are exactly maintained}
+  \small%
+  We can show that the discrete Maxwell equations on a Yee-cell
+  maintain the divergence relations exactly:
+  \begin{align*}
+    \nabla_F\cdot\mvec{B}^{n+1/2} &= 0 \\
+    \nabla_E\cdot\mvec{E}^n &= 0.
+  \end{align*}
+  There is an additional constraint of Maxwell equations in a plasma,
+  that is, the current conservation:
+  \begin{align*}
+    \pfrac{\varrho_c}{t} + \nabla\cdot\mvec{J} = 0.
+  \end{align*}
+  where $\varrho_c$ is the charge density and $\mvec{J}$ is the
+  current density. On the Yell-cell this becomes
+  \begin{align*}
+    \frac{\varrho_c^{n+1}-\varrho_v^{n}}{\Delta t}
+    +
+    \nabla_E\cdot\mvec{J}^{n+1/2} = 0.    
+  \end{align*}
+  One must ensure that current from particles is computed carefully to
+  ensure that this expression is satified. See Esirkepov,
+  Comp. Phys. Communications, {\bf 135} 144-153 (2001).
+\end{frame}
+
+%----------------------------------------------------------------
+\begin{frame}{Methods for solution of hyperbolic/mixed PDEs}
+
+  Hyperbolic (or mixed) PDEs appear everywhere in physics and
+  engineering: Euler equations, Navier-Stokes equations, MHD
+  equations, Einstein's equation of general relativity, shallow-water
+  equations, ....%
+  \mypause%
+  \begin{itemize}
+  \item Describe phenomena that travel with \emph{finite-speed}:
+    clearly all fundamental physics must obey causality, hence
+    hyperbolic systems are fundamental (though approximations of
+    hyperbolic equations may violate finite-speed constraint).
+    \mypause%
+  \item Display very rich structure shocks and other discontinuities,
+    instabilities, turbulence ... and in most problems, a mix of all!
+    \mypause%
+  \item Specialized methods are needed to solve such systems: naive
+    algorithms can {\bf cause disaster}!
+  \end{itemize}
+  \mypause%
+  My goal is to develop \emph{conceptual} understanding about such
+  equations and numerical methods to solve them. Literature is too
+  vast to cover in few lectures!
+
+\end{frame}
+
+\begin{frame}{Dissipation, dispersion and robustness}
+  Typically, numerical methods trade between accuracy and
+  robustness. Very accurate schemes are not too robust and highly
+  robust schemes are typically not very accurate. Must find a balance.
+  \mypause%
+  \begin{itemize}
+  \item To capture shocks and sharp gradient features some localized
+    diffusion (dissipation) is needed via \emph{limiters} or some
+    other means. Some dissipation may also be needed for stability.
+  \item Dissipation typical leads to a loss of other properties: in
+    particular, for Maxwell equations it can cause EM energy to
+    \emph{decay}. For Euler equations high-k modes may get over-damped
+    due to limiters: not good for turbulence problems.%
+    \mypause%
+  \item An ideal situation is to apply dissipation only where it is
+    needed and use low-dissipation schemes elsewhere. However, this is
+    easier said than done. How to determine where to apply dissipation
+    is very tricky, specially in nonlinear complex flows. Ease to
+    confuse physical features for numerical artifacts (and
+    vice-versa!)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Hyperbolic PDEs describe phenomena that travel at finite
+    speed}
+  \small%
+  An intuitive ``definition'' that we will initially work with before
+  stating the mathematically rigorous definition:
+  \begin{definition}[Hyperbolic PDEs ``Intuitive Definition'']
+    A hyperbolic PDE is one in which all phenomena travel at a finite
+    speed.
+  \end{definition}
+
+  \mypause%
+  \vskip0.1in%
+  Some prototypical examples we will look at more closely:
+  \begin{itemize}
+  \item Advection equation: simplest trivial \emph{linear} hyperbolic
+    equation. Trivial but very important!
+  \item Maxwell equation of electromagnetism: linear hyperbolic system
+  \item Euler equations: probably historically the most important
+    \emph{nonlinear hyperbolic system}. Basis of vast literature on
+    numerical methods and basis for more complex equations: ideal MHD,
+    (general) relativistic hydro/MHD, Navier-Stokes solvers, etc. Need
+    to understand even if you want to follow literature and apply
+    methods to your own problem.
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{Hyperbolic PDEs: rigorous definition, no reliance on
+    linearization}
+  Consider a system of conservation laws written as
+  \begin{align*}
+    \pfrac{\mvec{Q}}{t} + \pfrac{\mvec{F}}{x} = 0.
+  \end{align*}
+  where $\mvec{Q}$ is a vector of conserved quantities and
+  $\mvec{F}(\mvec{Q})$ is a vector of fluxes. This system is called
+  \emph{hyperbolic} if the flux Jacobian
+  \begin{align*}
+    \mvec{A} \equiv \pfrac{\mvec{F}}{\mvec{Q}}
+  \end{align*}
+  has \emph{real eigenvalues} and a \emph{complete set of linearly
+    independent} eigenvectors. In multiple dimensions if $\mvec{F}_i$
+  are fluxes in direction $i$ then we need to show that arbitrary
+  linear combinations
+  $\sum_i n_i {\partial\mvec{F}_i}/{\partial\mvec{Q}}$ have real
+  eigenvalues and linearly independent set of eigenvectors.
+  
+\end{frame}
+
+\begin{frame}{To compute eigensystem often easier to work in
+    \emph{quasilinear form}}
+  To derive eigensystem it is sometimes easier to work in
+  non-conservative (quasi-linear) form of equations. Start with
+  \begin{align*}
+    \pfrac{\mvec{Q}}{t} + \pfrac{\mvec{F}}{x} = 0.
+  \end{align*}
+  and introduce an invertible transform $\mvec{Q} = \varphi(\mvec{V})$
+  where $\mvec{V}$ are some other variables (for example: density,
+  velocity and pressure). Then the system converts to
+  \begin{align*}
+    \pfrac{\mvec{V}}{t} +
+    \underbrace{(\varphi^{\prime})^{-1} \mvec{A}\varphi^{\prime}}_{\mvec{B}}
+    \pfrac{\mvec{V}}{x} = 0.
+  \end{align*}
+  Can easily show eigenvalues of $\mvec{A}$ are same as that of
+  $\mvec{B}$ and right eigenvectors can be computed from
+  $\varphi^{\prime} \mvec{r}_p$ and left eigenvectors from
+  $\mvec{l}_p (\varphi^{\prime})^{-1}$.
+\end{frame}
+
+\begin{frame}{Burgers' equation}
+  \footnotesize%
+  Simplest nonlinear scalar equation, has a quadratic nonlinearity:
+  \begin{align*}
+    \pfrac{u}{t} + \frac{\partial}{\partial x}\bigg( \frac{1}{2} u^2
+    \bigg) = 0.
+  \end{align*}
+  Eigenvalue $\lambda = u$. Note that locally, eigenvalue depends on
+  the solution itself: leads to a situation in which after some finite
+  time to the formation of a \emph{shock} as the ``characteristics''
+  will intersect.
+  \begin{figure}
+    \setkeys{Gin}{width=0.5\linewidth,keepaspectratio}
+    \incfig{burgers-char.pdf}
+  \end{figure}  
+\end{frame}
+
+\begin{frame}{Burgers' equation: shock formation}
+
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      Due to varying characteristics speed (eigenvalue) the solution
+      can ``pile up'' leading to the formation of a shock.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \setkeys{Gin}{width=1.0\linewidth,keepaspectratio}
+        \incfig{burgers-shock.png}        
+      \end{figure}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}{Weak-solutions and entropy conditions}
+  \footnotesize%
+  At a shock the solution has a discontinuity. Hence, derivatives are
+  not defined! Differential form of the equations break-down. We must
+  use concept of weak-solutions in this case.%
+  \vskip0.1in%
+  \mypause%
+  Let $\phi(x,t)$ is a compactly supported (i.e. zero outside some
+  bounded region) smooth function (enough continuous
+  derivatives). Then multiply conservation law
+  \begin{align*}
+    \int_0^\infty  \int_{-\infty}^\infty \phi(x,t)
+    \bigg[\pfrac{\mvec{Q}}{t} + \pfrac{\mvec{F}}{x}\bigg]\thinspace
+    dx\thinspace dt = 0
+  \end{align*}
+  by $\phi(x,t)$ and integrating by parts to get the \emph{weak-form}
+  \begin{align*}
+    \int_0^\infty  \int_{-\infty}^\infty 
+    \bigg[\pfrac{\phi}{t} \mvec{Q} + \pfrac{\phi}{x} \mvec{F}\bigg]\thinspace
+    dx\thinspace dt
+    =
+    -
+    \int_{-\infty}^\infty \phi(x,0) \mvec{Q}(x,0) dx\thinspace dt.
+  \end{align*}  
+  \begin{definition}[Weak-solution]
+    A function $\mvec{Q}(x,t)$ is said to be a weak-solution if it
+    satisfies the weak-form for all compact, smooth $\phi(x,t)$.
+  \end{definition}
+  
+\end{frame}
+
+\begin{frame}{Weak-solutions and entropy conditions}
+  Unfortunately, weak-solutions are not unique! Why does this happen?
+  \vskip0.1in%
+  \mypause In physical problems there is always some non-ideal effects
+  (viscosity, Landau damping etc) that does not allow a genuine
+  discontinuity to form. However, this ``viscous shock layer'' can be
+  extremely thin compared to system size. Also, we know entropy must
+  increase in the physical universe.
+
+  \mypause%
+  \vskip0.1in%
+  This indicates we can recover uniqueness in two ways
+  \begin{itemize}
+  \item {\color{gray}{Add a viscous (diffusion) term and take limit of
+      viscosity going to zero. (Generally not convenient for numerical
+      work)}}%
+  \mypause%
+  \item Impose \emph{entropy condition}: construct an \emph{entropy}
+    function such that it remains conserved for smooth solutions but
+    \emph{increases} across a shock. Entropy is naturally suggested in
+    most physical problems.
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}{Weak-solutions and entropy conditions}
+  \small%
+  When characteristics \emph{diverge} (right plot below) the
+  weak-solution is not unique. A false ``shock'' solution also is a
+  weak-solution. Imposing \emph{entropy condition} gives a
+  \emph{rarefaction} wave seen in the right plot.
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \setkeys{Gin}{width=1.0\linewidth,keepaspectratio}
+        \incfig{burgers-step-a.png}
+      \end{figure}      
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \setkeys{Gin}{width=1.0\linewidth,keepaspectratio}
+        \incfig{burgers-step-b.png}
+      \end{figure}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}{Euler equations of invicid fluids}
+  \begin{align*}
+    \frac{\partial}{\partial{t}}    
+    \left[
+    \begin{matrix}
+      \rho \\
+      \rho u \\
+      \rho v \\
+      \rho w \\
+      \mathcal{E}
+    \end{matrix}
+    \right]
+    +
+    \frac{\partial}{\partial{x}}
+    \left[
+    \begin{matrix}
+      \rho u \\
+      \rho u^2 + p \\
+      \rho uv \\
+      \rho uw \\
+      (\mathcal{E}+p)u
+    \end{matrix}
+    \right]
+    =
+    0    
+  \end{align*}
+  Here $\mathcal{E} = p/(\gamma-1) + \rho u^2/2$ is the total
+  energy. Eigenvalues of this system are $\{u-c_s,u,u,u,u+c_s \}$
+  where $c_s = \sqrt{\gamma p/rho}$ is the sound speed. See class
+  notes for left/right eigenvectors.%
+  \vskip0.1in%
+  Note: in the limit $p\rightarrow 0$ all eigenvalues become $u$ and
+  for cold-fluid ($p=0$) the system does not possess complete set of
+  eigenvectors. (Cold fluid model is important to model dust, for
+  example, in astrophysical systems or in say volcanic explosions).
+\end{frame}
+
+\begin{frame}{Euler equations: transport of kinetic energy}
+  \footnotesize%
+  The energy conservation equation for Euler equation is
+  \begin{align*}
+    \pfrac{\mathcal{E}}{t} + \nabla\cdot\left[(\mathcal{E}+p)\mvec{u} \right] = 0
+  \end{align*}
+  where
+  \begin{align*}
+    \mathcal{E} =
+    \underbrace{\frac{p}{\gamma-1}}_{\textrm{IE}} +
+    \underbrace{\frac{1}{2}\rho u^2}_{\textrm{KE}}
+    .
+  \end{align*}
+  \mypause%
+  We can derive instead a \emph{balance law} (not conservation law)
+  for transport of KE
+  \begin{align*}
+    \frac{\partial}{\partial t}\left(\frac{1}{2}\rho u^2 \right)
+    +
+    \nabla\cdot\left(\frac{1}{2}\rho u^2 \mvec{u} \right)
+    =
+    -\mvec{u}\cdot\nabla p
+    \color{gray}{ + \frac{q}{m}\rho \mvec{u}\cdot\mvec{\mvec{E}}}
+  \end{align*}
+  \mypause%
+  For turbulence calculations it is important to ensure that in the
+  \emph{numerics} exchange of kinetic and internal energy (and in case
+  of plasma field-particle energy) is only via the RHS terms (pressure
+  work and work done by electric field).%
+  \vskip0.1in%
+  Many shock-capturing and higher-order methods can mess this up for
+  high-$k$ (short wavelength) modes due leading to incorrect energy
+  spectra. (No Free Lunch Principle).
+\end{frame}
+
+\begin{frame}{Euler equations: shocks, rarefactions and contacts}
+  In addition to shocks and rarefactions which we saw in Burgers's
+  equation, Euler equations also support \emph{contact
+    discontinuities}, across which density has a jump but not pressure
+  or velocity.
+  \begin{figure}
+    \setkeys{Gin}{width=0.3\linewidth,keepaspectratio}
+    \incfig{sod-density.png}
+    \incfig{sod-pressure.png}
+    \incfig{sod-vel.png}    
+  \end{figure}    
+\end{frame}
+
+\begin{frame}{Ideal MHD equations}
+  % \footnotesize%
+  \small%
+  Ideal MHD equations are very important to both fusion and
+  astrophysical problems. Written in non-conservative form they are
+  \begin{align*}
+    \frac{\partial \rho}{\partial t}+ \mvec{u}\cdot\nabla\rho + \rho\nabla\cdot\mathbf{u}&=0 \\
+    \frac{\partial \mathbf{u}}{\partial t}+\mathbf{u} \cdot \nabla
+    \mathbf{u}
+    +\frac{\nabla p}{\rho} &=
+                             \color{blue}{\frac{1}{\mu_{0}\rho}(\nabla \times \mathbf{B}) \times \mathbf{B}} \\
+    \frac{\partial p}{\partial t}+\mathbf{u} \cdot \nabla p+\gamma p
+    \nabla \cdot \mathbf{u} &= 0 \\
+    \color{blue}{\frac{\partial \mathbf{B}}{\partial t}-\nabla \times(\mathbf{u} \times \mathbf{B})} &= \color{blue}{0}
+  \end{align*}
+  with the constraint $\nabla\cdot\mvec{B} = 0$. The eigensystem is
+  complicated to compute! (Try doing it yourself). Eigenvalues are
+  $u\pm c_f$, $u\pm c_s$, $u\pm c_a$, and $u$ (7 eigenvalues for 8
+  equations). Here $c_f$, $c_s$ are the fast/slow magnetosonic speeds
+  and $c_a$ is the Alfven speed. See Ryu and Jones ApJ {\bf 442}
+  228-258, 1995 (linked on website).
+\end{frame}
+
+\end{document}
+
+
+\begin{frame}{}
+\end{frame}
+
+\begin{columns}
+  
+  \begin{column}{0.6\linewidth}
+  \end{column}
+  
+  \begin{column}{0.4\linewidth}
+    \includegraphics[width=\linewidth]{fig/Kinsey_2011_Pfus_vs_T.pdf}
+  \end{column}
+\end{columns}
+
+% ----------------------------------------------------------------

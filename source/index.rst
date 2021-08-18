@@ -401,7 +401,106 @@ A comprehensive review of structure preserving algorithms for use in
 plasma physics is provided by [Morrison2017]_. It has numerous
 references to the literature and should be consulted to develop a
 detailed understanding of such schemes.
-  
+
+Lecture 3: FDTD Scheme for Maxwell equations, hyperbolic equations
+------------------------------------------------------------------
+
+`PDF of Lecture 3 slides <./_static/lec3-2021.pdf>`_
+
+Solving Maxwell equations with FDTD scheme
+==========================================
+
+The Yee-cell preserves the underlying geometric structure of Maxwell
+equations, and ensures that the divergence relations are maintained in
+the case of vacuum fields. In essence, the electric field is a
+*vector* quantity (associated with lines) while the magnetic field is
+a *bi-vector* quantity (associated with surfaces). Hence, the most
+natural representation on a discrete grid utilizes this geometric fact
+to build a consistent scheme.
+
+To couple the plasma to the field currents and charges need to be
+"deposited" on the grid in a careful manner. Current continuity needs
+to be satisfied. See [Esirkepov2001]_, for example.
+
+For extension of standard FDTD method to complex geometries, see, for
+example [Nieter2009]_ and other references. Recent research has
+focused on developing finite-element based PIC codes (that maintain
+geometric structure of Maxwell equations), but these are usually very
+expensive to run and very complex to develop.
+
+Sometimes finite-volume schemes are also used to solve Maxwell
+equations. These may have some advantages and disadvantages compared
+to standard FDTD schemes. For example, FV usually do not conserve
+energy and find it hard to satisfy divergence relations. For a
+comparison of FV and FDTD methods see `this page
+<http://ammar-hakim.org/sj/je/je6/je6-maxwell-solvers.html>`_.
+
+A comprehensive review of structure preserving algorithms for use in
+plasma physics is provided by [Morrison2017]_. It has numerous
+references to the literature and should be consulted to develop a
+detailed understanding of such schemes.
+
+The literature on geometric and Lagrangian and Hamiltonian methods is
+difficult for most plasma physicist to understand. The classic Dover
+textbook by Lovelock and Rund `"Tensors, Differential Forms, and
+Variational Principles"
+<https://www.amazon.com/Tensors-Differential-Variational-Principles-Mathematics/dp/0486658406>`_.
+
+Hyperbolic Partial Differential Equations
+=========================================
+
+Hyperbolic equations describe a broad class of physical problems and
+are essentially characterized by finite propagation speed of
+disturbances. Examples of hyperbolic equations include Maxwell
+equations, Euler equations for ideal fluids and ideal MHD equations.
+
+To solve hyperbolic equations one needs to use special methods, in
+particular when shocks and other nonlinear phenomena are present
+(rarefaction waves, contact discontinuities, compression waves). These
+methods go by the name of "shock capturing schemes" and were
+originally developed in the aerospace community to solve for transonic
+and supersonic flows on airplanes and re-entry vehicles. They are
+widely used in astrophysics, but not so much in studying fusion
+plasmas.
+
+Petr Lax, a mathematician from NYU's Courant Institute won the `2005
+Abel Prize
+<https://www.nyu.edu/about/news-publications/news/2005/may/nyu_mathematician_peter_lax.html>`_
+(sort of "Noble Prize for Mathematics") in part for his contribution
+to the theory and computations of hyperbolic PDEs.
+
+A leading text-book on finite-volume methods to solve hyperbolic
+equations is by Randy LeVeque [LeVeque2002]_. His earlier "Green Book"
+[LeVeque1992]_ is a very good introduction to the mathematics of
+hyperbolic equations and somewhat better than the 2002 "Red Book".
+
+We will focus on finite-volume and discontinuous Galerkin schemes for
+partial differential equations (PDEs), specifically fluid mechanics
+(Euler equations) and plasma physics (MHD equations, multi-fluid
+equations and the Vlasov-Maxwell system). We will look at schemes
+suited to shock dominated flows rather than problems on resistive
+time-scales. Vast majority of laboratory, space and astrophysical
+problems have complex interactions of shocks, turbulence and magnetic
+fields and the schemes in these lectures will help you solve equation
+to study such phenomena.
+
+As reading for the lectures please read Chapters 1, 2, 3 and 5 in
+[LeVeque1992]_. Some notes and references to material not
+covered in class:
+
+- van Dyke's "Album of Fluid Motion" is an excellent source of
+  beautiful pictures of fluid flow. See `this link for a PDF of an
+  older version
+  <http://courses.washington.edu/me431/handouts/Album-Fluid-Motion-Van-Dyke.pdf>`_
+  of the book.
+- See eigensystem of Euler equations listed `here
+  <http://ammar-hakim.org/sj/euler-eigensystem.html>`_ and Maxwell
+  equations `here
+  <http://ammar-hakim.org/sj/maxwell-eigensystem.html>`_.
+- For ideal MHD equations the eigensystem is very complex. A listing
+  is in [RyuJones1995]_ but it may be a good idea to rederive this and
+  cross-check.
+
 References
 ----------
 
