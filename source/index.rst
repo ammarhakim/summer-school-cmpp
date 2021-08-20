@@ -449,7 +449,7 @@ Variational Principles"
 Lecture 4: Hyperbolic equations, Finite-volume schemes
 ------------------------------------------------------
 
-`PDF of Lecture 3 slides <./_static/lec4-2021.pdf>`_
+`PDF of Lecture 4 slides <./_static/lec4-2021.pdf>`_
 
 Hyperbolic Partial Differential Equations
 =========================================
