@@ -1,0 +1,111 @@
+% Inner theme by Petr Cagas
+
+\mode<presentation>
+
+%---------------------------------------------------------------------
+%-- Colors, Lengths, and Margins -------------------------------------
+\setbeamercolor*{lineup}{parent=palette quaternary}
+\setbeamercolor*{linemid}{parent=palette secondary}
+\setbeamercolor*{linebottom}{parent=palette tertiary}
+\setbeamercolor*{title page header}{parent=palette primary}
+
+\newlength{\beamer@Blacksburg@lineup}
+\setlength{\beamer@Blacksburg@lineup}{.01\paperheight}
+\newlength{\beamer@Blacksburg@linemid}
+\setlength{\beamer@Blacksburg@linemid}{.01\paperheight}
+\newlength{\beamer@Blacksburg@linebottom}
+\setlength{\beamer@Blacksburg@linebottom}{.01\paperheight}
+
+\newlength{\beamer@Blacksburg@normalmargin}
+\setlength{\beamer@Blacksburg@normalmargin}{.06\paperwidth}
+\setbeamersize{text margin left=\beamer@Blacksburg@normalmargin}
+\setbeamersize{text margin right=\beamer@Blacksburg@normalmargin}
+\setlength\leftmargini{.6\beamer@Blacksburg@normalmargin}
+\setlength\leftmarginii{.6\beamer@Blacksburg@normalmargin}
+\setlength\leftmarginiii{.6\beamer@Blacksburg@normalmargin}
+
+%---------------------------------------------------------------------
+%-- Title Page -------------------------------------------------------
+\defbeamertemplate*{title page}{Blacksburg theme}[1][]
+{
+  {\parskip0pt\offinterlineskip%
+  \hbox{\hskip-\Gm@lmargin\hbox{\vbox{\textwidth=\paperwidth\vbox{}\vskip-1.5ex
+
+    \begin{beamercolorbox}[wd=\paperwidth, ht=.4\paperheight,
+        center,#1]{title page header}
+      \usebeamerfont{title}\LARGE\inserttitle\par
+      \ifx\insertsubtitle\@empty
+      \else
+        \vskip0.25em
+        {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}
+          \insertsubtitle\par}
+      \fi
+      \vspace{.125\paperheight}
+    \end{beamercolorbox}
+
+    \vbox{}\vskip-\beamer@Blacksburg@lineup%
+    \vbox{}\vskip-\beamer@Blacksburg@linemid%
+    % First line.
+    \hbox{
+      \begin{beamercolorbox}[wd=.381\paperwidth,ht=\beamer@Blacksburg@lineup]{}
+      \end{beamercolorbox}
+      \begin{beamercolorbox}[wd=.619\paperwidth,ht=\beamer@Blacksburg@lineup]{lineup}
+      \end{beamercolorbox}
+    }
+    \hbox{
+      \begin{beamercolorbox}[wd=.237\paperwidth,ht=\beamer@Blacksburg@linemid]{}
+      \end{beamercolorbox}
+      \begin{beamercolorbox}[wd=.763\paperwidth,ht=\beamer@Blacksburg@linemid]{linemid}
+      \end{beamercolorbox}
+    }
+    \hbox{
+      \begin{beamercolorbox}[wd=.619\paperwidth,ht=\beamer@Blacksburg@linebottom]{}
+      \end{beamercolorbox}
+      \begin{beamercolorbox}[wd=.381\paperwidth,ht=\beamer@Blacksburg@linebottom]{linebottom}
+      \end{beamercolorbox}
+    }}
+    }
+    \hskip-\Gm@rmargin%
+  }}\hfil
+  %
+
+  \vskip1em\par
+  \begin{beamercolorbox}[sep=8pt,center,#1]{author}
+    \usebeamerfont{author}\insertauthor
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[sep=8pt,center,#1]{institute}
+    \usebeamerfont{institute}\insertinstitute
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[sep=8pt,center,#1]{date}
+    \usebeamerfont{date}\insertdate
+  \end{beamercolorbox}\vskip0.5em
+  \begin{centering}
+    \vfill
+    \includegraphics[width=.15\paperwidth]{logo_orange}
+    \vfill
+  \end{centering}
+}
+
+
+%---------------------------------------------------------------------
+%-- Items ------------------------------------------------------------
+\defbeamertemplate{itemize item}{squarealt}%
+{\tiny\raise.5ex\hbox{\donotcoloroutermaths$\blacksquare$}}
+\defbeamertemplate{itemize subitem}{squarealt}%
+{\tiny\raise.4ex\hbox{\donotcoloroutermaths$\square$}}
+\defbeamertemplate{itemize subsubitem}{squarealt}%
+{\tiny\raise.3ex\hbox{\donotcoloroutermaths$\blacksquare$}}
+
+\defbeamertemplate{itemize item}{circlealt}%
+{\small\raise.2ex\hbox{\donotcoloroutermaths$\bullet$}}
+\defbeamertemplate{itemize subitem}{circlealt}%
+{\small\raise.1ex\hbox{\donotcoloroutermaths$\circ$}}
+\defbeamertemplate{itemize subsubitem}{circlealt}%
+{\scriptsize\raise.1ex\hbox{\donotcoloroutermaths$\bullet$}}
+
+\def\circletext{circle}
+\setbeamertemplate{items}[circlealt]
+
+
+\mode<all>
+

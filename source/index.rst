@@ -446,6 +446,11 @@ textbook by Lovelock and Rund `"Tensors, Differential Forms, and
 Variational Principles"
 <https://www.amazon.com/Tensors-Differential-Variational-Principles-Mathematics/dp/0486658406>`_.
 
+Lecture 4: Hyperbolic equations, Finite-volume schemes
+------------------------------------------------------
+
+`PDF of Lecture 3 slides <./_static/lec4-2021.pdf>`_
+
 Hyperbolic Partial Differential Equations
 =========================================
 

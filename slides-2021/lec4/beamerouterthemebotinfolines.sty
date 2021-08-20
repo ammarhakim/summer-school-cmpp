@@ -1,0 +1,99 @@
+% Outer theme by Petr Cagas
+
+\mode<presentation>
+
+% Colors
+\setbeamercolor*{lineup}{parent=palette quaternary}
+\setbeamercolor*{linemid}{parent=palette secondary}
+\setbeamercolor*{linebottom}{parent=palette tertiary}
+\setbeamercolor*{page header}{parent=titlelike}
+\setbeamercolor*{block title}{parent=palette primary}
+\setbeamercolor*{block body}{parent=palette quaternary}
+
+% Lengths
+\newlength{\headerheight}
+\setlength{\headerheight}{.075\paperheight}
+\newlength{\footerheight}
+\setlength{\footerheight}{0.025\paperheight}
+\setlength{\beamer@Blacksburg@lineup}{.025\paperheight}
+\setlength{\beamer@Blacksburg@linemid}{.015\paperheight}
+\setlength{\beamer@Blacksburg@linebottom}{.01\paperheight}
+
+
+%---------------------------------------------------------------------
+%-- Header -----------------------------------------------------------
+\defbeamertemplate*{headline}{Blacksburg theme}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=\headerheight]{page header}
+  \end{beamercolorbox}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north east] at (current page.north east) {\includegraphics[height=0.75\headerheight]{logo_orange}};
+  \end{tikzpicture}
+  } 
+}
+
+
+%---------------------------------------------------------------------
+%-- Title ------------------------------------------------------------
+\defbeamertemplate*{frametitle}{Blacksburg theme}[1][left]
+{
+  \begin{beamercolorbox}[sep=\beamer@leftmargin,wd=1.1\linewidth]{}
+    \usebeamerfont{frametitle}\usebeamercolor[bg]{framesubtitle}%
+    \vbox{}\vskip -2\headerheight
+    \hskip -1ex
+    \strut\insertframetitle\strut\par
+    {
+      \ifx\insertframesubtitle\@empty
+      \else
+      {\usebeamerfont{framesubtitle}\usebeamercolor[bg]{framesubtitle}
+        \insertframesubtitle\strut\par}%
+      \fi
+    }
+    \vskip-1ex%
+    \vskip-\beamer@leftmargin
+  \end{beamercolorbox}
+
+  % Line bellow the title
+  \vskip-.4\beamer@leftmargin
+  \begin{beamercolorbox}[wd=\textwidth, ht=.15ex]{linemid}
+  \end{beamercolorbox}
+}
+
+\defbeamertemplate*{frametitle continuation}{Blacksburg theme}{
+  (\insertcontinuationcount)
+}
+
+
+%---------------------------------------------------------------------
+%-- Footer -----------------------------------------------------------
+\defbeamertemplate*{footline}{Blacksburg theme}
+{
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.15\paperwidth,
+        ht=\footerheight,
+        dp=.4\footerheight,
+        center]{lineup}%
+      \insertframenumber{} / \inserttotalframenumber 
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.6\paperwidth,
+        ht=\footerheight,
+        dp=.4\footerheight,
+        center]{linebottom}%
+      \let\hyperlink\@secondoftwo\insertshorttitle
+      \hspace*{1em}\insertsectionhead
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.25\paperwidth,
+        ht=\footerheight,
+        dp=.4\footerheight,
+        center]{linemid}%
+      \let\hyperlink\@secondoftwo\insertshortauthor
+    \end{beamercolorbox}%
+  }
+}
+
+\mode
+<all>
+
