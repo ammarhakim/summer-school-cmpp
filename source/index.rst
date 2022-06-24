@@ -8,6 +8,15 @@ Physics mini-course. All material is copyrighted by Ammar Hakim and
 released under the `Creative Commons CC BY License
 <https://creativecommons.org/licenses/>`_.
 
+.. note::
+
+   If you attended my computational physics lecture at the SULI 2022
+   summer program and are looking for the slides, please `click here
+   <./_static/suli-2022.pdf.pdf>`_. For more detailed slides and
+   notes, see below. Also see my notes and slides from a previous
+   `class for more details
+   <https://ast560.readthedocs.io/en/latest/>`_.
+
 .. contents::
 
 Background
