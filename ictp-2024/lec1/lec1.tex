@@ -1,0 +1,933 @@
+\documentclass[aspectratio=43]{beamer}
+%\documentclass[aspectratio=169]{beamer}
+
+\usepackage{graphicx}  % Required for including images
+\usepackage{natbib}
+\usepackage{booktabs} % Top and bottom rules for tables
+\usepackage{amssymb,amsthm,amsmath}
+\usepackage{exscale}
+\usepackage{natbib}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{animate}
+\hypersetup{colorlinks=true}
+\hypersetup{citecolor=porange}
+\hypersetup{urlcolor=porange!80!}
+\hypersetup{linkcolor=porange}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{principle}{Principle}
+
+% Set the margins
+
+%\newcommand{\grad}{\nabla}
+\newcommand{\ignore}[1]{}  % ignore a section.
+
+% Handy commands for notes and 'to do' items 
+
+% For a clean copy, ignore these:
+%\newcommand{\todo}[1]{}
+%\newcommand{\note}[2]{}
+%\newcommand\tocite[1]{}
+
+%% Writing quarters
+\newcommand{\wQ}[1]{{\textcolor{white}{Q#1}}}
+\newcommand{\bQ}[1]{{Q#1}}
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+%% Autoscaled figures
+\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.9\linewidth,keepaspectratio}
+
+%% Commonly used macros
+\newcommand{\eqr}[1]{Eq.\thinspace(#1)}
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+% \newcommand{\pfracc}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pfraca}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\pfracb}[2]{\partial #1/\partial #2}
+% \newcommand{\pfracbb}[2]{\partial^2 #1/\partial #2^2}
+% \newcommand{\spfrac}[2]{{\partial_{#1}} {#2}}
+% \newcommand{\mvec}[1]{\mathbf{#1}}
+\newcommand{\gvec}[1]{\boldsymbol{#1}}
+% \newcommand{\script}[1]{\mathpzc{#1}}
+% \newcommand{\gke}{{\tt Gkeyll}}
+\newcommand{\gcs}{\nabla_{\mvec{x}}}
+\newcommand{\gvp}{\nabla_{\mvec{p}}}
+\newcommand{\gvs}{\nabla_{\mvec{v}}}
+\newcommand{\gps}{\nabla_{\mvec{z}}}
+\newcommand{\dtx}{\thinspace d^3\mvec{x}}
+\newcommand{\Perp}{{\mbox{$\scriptscriptstyle \perp$}}} 
+
+\newcommand{\delx}{\nabla_\mvec{x}}
+\newcommand{\delv}{\nabla_\mvec{v}}
+\newcommand{\delxp}{\nabla_{\mvec{x}'}}
+\newcommand{\delvp}{\nabla_{\mvec{v}'}}
+\newcommand{\delxpp}{\nabla_{\mvec{x}''}}
+\newcommand{\delvpp}{\nabla_{\mvec{v}''}}
+\newcommand{\bdf}{\bar{f}}
+\newcommand{\bdg}{\bar{g}}
+\newcommand{\buni}{\mvec{b}}
+
+%% NOAH stuff
+\newcommand{\bhat}{\hat{\textsf{b}}}
+\newcommand{\vparhat}{\hat{\textsf{v}}_\parallel}
+\newcommand{\btilde}{\tilde{\textsf{b}}}
+\newcommand{\vE}{{\bf v}_E}
+\newcommand{\pderiv}[2]{
+\frac{\partial #1}{\partial #2}
+}
+\newcommand{\balpha}{\boldsymbol{\alpha}}
+\newcommand{\Ast}{{\scalebox{1.5}{\raisebox{-0.2ex}{$\ast$}}}}
+
+
+
+%% MANA stuff
+
+\newcommand{\LBO}{LBO}
+\newcommand{\dx}{dx}
+\newcommand{\dxi}{\Delta x_i}
+\newcommand{\dxij}{\Delta x_{i,j}}
+\newcommand{\dvi}{\Delta v_i}
+\newcommand{\vt}{v_{th}}
+\newcommand{\vts}{v_{th,s}}
+\newcommand{\vte}{v_{th,e}}
+\newcommand{\vti}{v_{th,i}}
+\newcommand{\vv}{\v{v}}
+\newcommand{\vi}{v_i}
+\newcommand{\vj}{v_j}
+\newcommand{\vk}{v_k}
+\newcommand{\ui}{u_i}
+\newcommand{\uk}{u_k}
+\newcommand{\vu}{\v{u}}
+\newcommand{\lapvi}[1]{\pd{}{\vi\partial\vi} #1}
+\newcommand{\vX}{\v{x}}
+\newcommand{\vZ}{\v{z}}
+\newcommand{\vx}{v_x}
+\newcommand{\vy}{v_y}
+\newcommand{\vz}{v_z}
+\newcommand{\lapv}[1]{\nabla^2_{\vv} #1}
+\newcommand{\lapSqv}[1]{\nabla^4_{\vv} #1}
+\newcommand{\divv}[1]{\nabla_{\vv} \cdot #1}
+%\newcommand{\vE}{\v{E}}
+\newcommand{\vB}{\v{B}}
+\newcommand{\vJ}{\v{J}}
+\newcommand{\Ji}{J_i}
+\newcommand{\spr}{{s^\prime}}
+\newcommand{\vpr}{{v^\prime}}
+\newcommand{\vvpr}{\v{\vpr}}
+\newcommand{\intInf}{\int_{-\infty}^{\infty}}
+\newcommand{\dvv}{d\vv}
+\newcommand{\dTvv}{d^2\vv}
+\newcommand{\dThvv}{d^3\vv}
+\newcommand{\ndim}{d}
+\newcommand{\cdim}{d_c}
+\newcommand{\vdim}{d_v}
+\newcommand{\polyOrder}{p}
+\newcommand{\bInd}{k}
+\newcommand{\basisi}{{\psi_\bInd}}	% Basis function with index.
+\newcommand{\polySet}{\v{P}^\polyOrder}
+\newcommand{\dt}{{\Delta}t}
+\newcommand{\vmax}{v_{\text{max}}}
+\newcommand{\vmaxi}{v_{i,\text{max}}}
+\newcommand{\vmin}{v_{\text{min}}}
+\newcommand{\vmini}{v_{i,\text{min}}}
+\newcommand{\vmaxj}{v_{j,\text{max}}}
+\newcommand{\vminj}{v_{j,\text{min}}}
+\newcommand{\vbound}{\partial\Omega_v}
+\newcommand{\vboundi}{\partial\Omega_{v_i}}
+\newcommand{\vSqPro}{\overline{v^2}}
+\newcommand{\viSqPro}{\overline{v_i^2}}
+\newcommand{\viviPro}{\overline{v_k v_k}}
+
+\newcommand{\Ncells}{N}	% Number of cells.
+\newcommand{\NC}{N_c} % Number of configuration space monomials.
+\newcommand{\NV}{N_v} % Number of configuration space monomials.
+\newcommand{\NP}{N_p} % Number of configuration space monomials.
+\newcommand{\cellInd}{j}	% Letter used to index cells.
+\newcommand{\cellLetter}{K} % Letter used to denote a cell.
+\newcommand{\celli}{{\cellLetter_\cellInd}}	% Indexed cell.
+\newcommand{\celliBound}{{\partial \celli}}	% Boundary of the cell.
+\newcommand{\celliBoundvi}{{\partial K_{\cellInd,v_i}}}	% Boundary of the cell orthoginal to v_i.
+\newcommand{\celliBoundvk}{{\partial K_{\cellInd,v_k}}}	% Boundary of the cell orthoginal to v_k.
+\newcommand{\nhat}{\uv{n}}	% Unit normal vector.
+\newcommand{\xijp}{{x_{i,\cellInd+1/2}}}	% Upper conf space boundary of the cell.
+\newcommand{\xijm}{{x_{i,\cellInd-1/2}}} % Lower conf space boundary of the cell.
+\newcommand{\vijp}{{v_{i,\cellInd+1/2}}}	% Upper velocity boundary of the cell.
+\newcommand{\vijm}{{v_{i,\cellInd-1/2}}} % Lower velocity boundary of the cell.
+\newcommand{\vkjp}{{v_{k,\cellInd+1/2}}}	% Upper velocity boundary of the cell.
+\newcommand{\vkjm}{{v_{k,\cellInd-1/2}}} % Lower velocity boundary of the cell.
+
+% Notation related to recovery DG.
+\newcommand{\frec}{\hat{f}}	% Recovery polynomial.
+\newcommand{\cellL}{\cellLetter_L}	% Left cell.
+\newcommand{\cellR}{\cellLetter_R}	% Right cell.
+\newcommand{\fhL}{f_{h L}}
+\newcommand{\fhR}{f_{h R}}
+\newcommand{\fhLi}{f_{h L,k}}
+\newcommand{\fhRi}{f_{h R,k}}
+\newcommand{\polySetL}{\polySet_L}
+\newcommand{\polySetR}{\polySet_R}
+\newcommand{\basisLi}{\psi_{L,k}}
+\newcommand{\basisRi}{\psi_{R,k}}
+\newcommand{\basisLj}{\psi_{L,l}}
+\newcommand{\basisRj}{\psi_{R,l}}
+
+% Moments.
+\newcommand{\MZ}{M_0}
+\newcommand{\MZs}{M_0^s}
+\newcommand{\MO}{M_1}
+\newcommand{\MOi}{M_{1,i}}
+\newcommand{\MOis}{M_{1,i}^s}
+\newcommand{\MOk}{M_{1,k}}
+\newcommand{\MOs}{M_{1}^s}
+\newcommand{\vMOs}{\gv{M}_{1}^s}
+\newcommand{\vMO}{\gv{M}_1}
+\newcommand{\MT}{M_2}
+\newcommand{\MTs}{M_{2}^s}
+
+\newcommand{\Ghat}{\hat{G}}
+\newcommand{\fL}{f_L}
+\newcommand{\fR}{f_R}
+\newcommand{\fhat}{\hat{f}}
+
+%--- Math commands ---
+% \DeclareMathOperator{\Sample}{Sample}
+\let\vaccent=\v % rename builtin command \v{} to \vaccent{}
+\renewcommand{\v}[1]{\ensuremath{\mathbf{#1}}} % for vectors
+\newcommand{\gv}[1]{\ensuremath{\mbox{\boldmath$ #1 $}}} 
+% for vectors of Greek letters
+\newcommand{\uv}[1]{\ensuremath{\mathbf{\hat{#1}}}} % for unit vector
+\newcommand{\abs}[1]{\left| #1 \right|} % for absolute value
+
+\newcommand{\avg}[1]{\left< #1 \right>} % for average
+\let\underdot=\d % rename builtin command \d{} to \underdot{}
+\renewcommand{\d}[2]{\frac{d #1}{d #2}} % for derivatives
+\newcommand{\dd}[2]{\frac{d^2 #1}{d #2^2}} % for double derivatives
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}} 
+% for partial derivatives
+\newcommand{\pdd}[2]{\frac{\partial^2 #1}{\partial #2^2}} 
+% for double partial derivatives
+\newcommand{\pddo}[3]{\frac{\partial^2 #1}{\partial #2 \partial #3}} 
+% for off-diagonal double partial derivatives
+\newcommand{\pdc}[3]{\left( \frac{\partial #1}{\partial #2}\right)_{#3}} % for thermodynamic partial derivatives
+\newcommand{\partialx}[1]{\partial_x #1} % partial_x (simplified notation for \pd)
+\newcommand{\partialy}[1]{\partial_y #1} % partial_y (simplified notation for \pd)
+\newcommand{\partialz}[1]{\partial_z #1} % partial_z (simplified notation for \pd)
+%\newcommand{\ket}[1]{\left| #1 \right>} % for Dirac bras
+%\newcommand{\bra}[1]{\left< #1 \right|} % for Dirac kets
+%\newcommand{\braket}[2]{\left< #1 \vphantom{#2} \right|
+% \left. #2 \vphantom{#1} \right>} % for Dirac brackets
+%\newcommand{\matrixel}[3]{\left< #1 \vphantom{#2#3} \right|
+% #2 \left| #3 \vphantom{#1#2} \right>} % for Dirac matrix elements
+\newcommand{\grad}[1]{\nabla #1} % for gradient
+\let\divsymb=\div % rename builtin command \div to \divsymb
+\renewcommand{\div}[1]{\nabla \cdot #1} % for divergence
+\newcommand{\curl}[1]{\nabla \times #1} % for curl
+\newcommand{\lap}[1]{\nabla^2 #1} % Laplacian.
+\newcommand{\inProd}[2]{{\left\langle #1, #2 \right\rangle}} % inner product.
+\newcommand{\kron}[2]{\delta_{#1 #2}} % Kronecker delta.
+\newcommand{\coll}[1]{\left(\pd{ #1}{t}\right)_c} % Collision operator.
+\newcommand{\collF}[1]{\left(\partial{ #1}/\partial{t}\right)_c} %
+
+% Other stuff
+%\usepackage{units}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+
+\usepackage{tabularx}
+\usepackage{mdwlist} % enumerate*, itemize* squeeze vertical space
+
+\newcommand{\comment}[1]{\textit{\textcolor{red}{#1}}}
+\renewcommand{\comment}[1]{}
+
+% Turn off red comments by uncommenting the following line:
+%\renewcommand{\comment}[1]{}
+
+%% Autoscaled figures
+%\newcommand{\incfig}{\centering\includegraphics}
+\setkeys{Gin}{width=0.9\linewidth,keepaspectratio}
+\newcommand{\gke}{{\tt Gkeyll}}
+%\newcommand{\gke}{{\textsc{Gkeyll}}}
+\newcommand{\mvec}[1]{\mathbf{#1}}
+
+%Make the items smaller
+\newcommand{\cramplist}{
+	\setlength{\itemsep}{0in}
+	\setlength{\partopsep}{0in}
+	\setlength{\topsep}{0in}}
+\newcommand{\cramp}{\setlength{\parskip}{.5\parskip}}
+\newcommand{\zapspace}{\topsep=0pt\partopsep=0pt\itemsep=0pt\parskip=0pt}
+
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+ }
+
+\newcommand{\mypause}{\pause}
+%\newcommand{\mypause}{}
+
+\usetheme[bullet=circle,% Use circles instead of squares for bullets.
+titleline=true,% Show a line below the frame title.
+]{Princeton}
+
+\title[{\tt }] {Computational Methods for Fluids \& (Gyro) Kinetic
+  Equations. Lecture I}%
+\author[http://cmpp.rtfd.io]%
+{Ammar H. Hakim\inst{1}}%
+
+\institute[PPPL]
+{ \inst{1} Princeton Plasma Physics Laboratory, Princeton, NJ %
+}
+
+\date[5/9/2024]{ICTP Fusion Summer School, 2024}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+
+  \begin{block}{Alternative Title}
+    A Field Guide to Constructing Discrete Plasma Universes
+  \end{block}  
+
+\end{frame}
+
+\begin{frame}{Computational Plasma Physics: Uniquely Challenging}
+  \footnotesize Vast majority of plasma physics in contained in the
+  Vlasov-Maxwell equations that describe self-consistent evolution of
+  distribution function $f(\mvec{x},\mvec{v},t)$ and electromagnetic
+  fields:
+  \begin{align*}
+    \pfrac{f_s}{t} + \gcs\cdot (\mvec{v} f_s) + \gvs\cdot (\mvec{F}_s
+    f_s) = \left( \pfrac{f_s}{t} \right)_c
+  \end{align*}
+  where $\mvec{F}_s=q_s/m_s (\mvec{E}+\mvec{v}\times\mvec{B})$. The EM
+  fields are determined from Maxwell equations
+  \begin{align*}
+    \frac{\partial \mvec{B}}{\partial t} + \nabla\times\mvec{E} &= 0 \\
+    \epsilon_0\mu_0\frac{\partial \mvec{E}}{\partial t} -
+    \nabla\times\mvec{B} &= -\mu_0\sum_s q_s \int_{-\infty}^\infty v f_s \thinspace d\mvec{v}^3
+  \end{align*}
+  Theoretical and computational plasma physics consists of making
+  extensions/approximations and solving these equations in specific
+  situations.
+\end{frame}
+
+\begin{frame}{Why is solving Vlasov-Maxwell equations hard?}
+  
+  Despite being the fundamental equation in plasma physics the VM
+  equations remain highly challenging to solve.
+  \begin{itemize}
+  \item Highly nonlinear with the coupling between fields and
+    particles via currents and Lorentz force. Collisions can further
+    complicate things
+    \mypause%
+  \item High dimensionality and multiple species with large mass
+    ratios: 6D phase-space, $m_e/m_p = 1/1836$ and possibly dozens of
+    species.
+    \mypause%
+  \item Enormous scales in the system: light speed and electron plasma
+    oscillations; cyclotron motion of electrons and ions; fluid-like
+    evolution on intermediate scales; resistive slow evolution of
+    near-equilibrium states; transport scale evolution in tokamak
+    discharges.  14 orders of magnitude of physics in these
+    equations!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Goals and Outline of Talk}
+  Goal of these lectures is to introduce modern concepts in
+  computational plasma physics, specially with a view towards
+  connecting \emph{continuous} and \emph{discrete} properties of the
+  equations.
+  
+  \mypause%
+  \begin{itemize}
+  \item {\bf Part 1}: Physics that should be preserved in the discrete
+    system. Indirect properties and going beyond accuracy and order of
+    schemes.
+    \mypause%
+  \item {\bf Part 2:} Schemes for fluid and (gyro) kinetic
+    equations. Mostly focussed on Finite-Volume (FV) schemes for
+    multi-fluid equations, and advanced discontinuous Galerkin (DG)
+    for (gyro) kinetic equations.
+  \end{itemize}
+  \vskip0.1in%
+  Treat kinetic and multifluid, multimoment equations as PDEs. Not a
+  talk on PIC methods! (See work by H. Qin, P. Morrison et al on
+  modern structure preserving schemes).
+\end{frame}
+
+\begin{frame}{Why Care?}
+
+  One can look at computational physics in two ways: as an end in
+  itself, and as a tool for applications. Both of these are important!
+
+  \mypause%  
+  As end in itself:
+  \begin{itemize}
+  \item Sits between applied mathematics and theoretical physics. The
+    goal is to design efficient numerical methods to solve equations
+    from theoretical physics.
+    \mypause%
+  \item The goal here is the numerical method itself: what are its
+    properties? Does it faithfully represent the underlying physics?
+    Does it run efficiently on modern computers? Research into modern
+    numerical methods (including structure preserving methods) fall
+    into this category.
+    \mypause%    
+  \item Usually, besides the fun of solving complex equations, we wish
+    to gain deeper understanding of underlying physics. {\bf Some
+      theoretical questions can only be answered with computer
+      simulations.}
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{Why Care?}
+
+  As a tool for applications:
+  \begin{itemize}
+  \item The second reason to care is that computational physics
+    provides tools to understand/design experiments or observations.
+  \item {Large number of routine calculations are needed to build
+      modern experiments (heat-transfer, structural analysis, basic
+      fluid mechanics, equilibrium and stability calculations,
+      etc). {\bf Such routine calculations are no longer cutting edge
+        research topics.}}
+  \end{itemize}
+  \mypause%  
+  \vskip0.1in%
+  However, today strong need to be at {\bf intersection of
+    cutting-edge computational physics and critical applications}:
+  E.g: More than \$6 billion are invested in private fusion efforts;
+  billions more in public efforts.
+\end{frame}
+
+\begin{frame}{Exploring the Fusion Design Space}
+
+  What is needed to explore or ``confine'' the design space for the
+  crowded space of fusion concepts?
+
+  \begin{itemize}
+  \item Unfortunately, neither the physical models or the numerics are
+    fully developed yet to understand \emph{burning plasma
+      regime}. Enormous scales, hairy plasma-material-interaction and
+    zoo of possible instabilities.
+  \end{itemize}
+  \mypause%
+  Two approaches: 
+  \begin{itemize}  
+  \item Do calculations with first-principles models on the large
+    computers. Required to do detailed physics studies%
+    \mypause%
+  \item Do many smaller calculations in an \emph{optimization loop} to
+    confine the design space. Run occasional large calculations to
+    verify.
+  \end{itemize}
+
+  Each of these approaches needs development of appropriate models,
+  and fast numerical methods on modern hardware architecture. Put
+  everything in an optimization loop.
+
+\end{frame}
+
+\begin{frame}{Setting the Stage: Shock-Bubble Interactions}
+  \begin{figure}
+    %\setkeys{Gin}{width=0.9\linewidth,keepaspectratio}
+    %\incfig{shock-bubble/rho_shock_bubble_40.png}
+    \animategraphics[controls={play,step,stop},width=0.7\linewidth]{10}{shock-bubble/rho_shock_bubble_}{0}{40}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Setting the Stage: Shock-Bubble Interactions}
+  \begin{figure}
+    \setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+    \incfig{shock-bubble/rho_shock_bubble_40.png}
+    %\animategraphics[controls={play,step,stop},width=0.65\linewidth]{10}{shock-bubble/rho_shock_bubble_}{0}{40}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Setting the Stage: Kevin-Helmholtz Instability}
+  \begin{figure}
+    %\setkeys{Gin}{width=0.65\linewidth,keepaspectratio}
+    %\incfig{kh/kh-hr_10.png}
+    \animategraphics[controls={play,step,stop},width=0.65\linewidth]{10}{kh/kh-hr_}{0}{40}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Setting the Stage: Kevin-Helmholtz Instability}
+  \begin{figure}
+    \setkeys{Gin}{width=0.65\linewidth,keepaspectratio}
+    \incfig{kh/kh-hr_10.png}
+    %\animategraphics[controls={play,step,stop},width=0.65\linewidth]{10}{kh/kh-hr_}{0}{40}
+  \end{figure}
+\end{frame}
+
+
+\begin{frame}{The Ultimate Discrete Scheme (UDS)}
+
+  A hypothetical ``Ultimate Discrete Scheme'' must possesses the
+  following three properties
+  \begin{itemize}
+  \item {\bf Robustness} The scheme must be \emph{robust}: capture
+    shocks, maintain positivity, preserve monotonicity, satisfy
+    involutions (divergence constraints), properly preserve energy
+    partition.
+  \item {\bf Accuracy} Provide low dissipation for smooth high-$k$
+    modes to properly simulate turbulence. Converge quickly to give
+    accurate results when needed
+  \item {\bf Efficiency} Run rapidly for modest resolutions. Do
+    interesting physics on a laptop. Use GPUs and other hardware
+    accelerators for larger simulations. Do 1000s of simulations.
+  \end{itemize}
+
+  Sadly, such a scheme does not exist! Many of the goals are
+  contradictory.
+\end{frame}
+
+\begin{frame}{No Free Lunch Principle}
+
+  \begin{block}{No Free Lunch Principle}
+    There is no \emph{unique} discrete system of equations
+    corresponding to a given system of continuous equations. No
+    discrete system is perfect and a method that works well in one
+    situation may not work well in others.
+  \end{block}
+
+  \mypause%
+  ``All numerical methods suck, though some suck less than
+  others. Make sure your method sucks less that the competition''
+
+\end{frame}
+
+\begin{frame}{Many approximations developed over the decades}
+  \small%
+  Modern computational plasma physics consists of making justified
+  approximations to the VM system and then coming up with efficient
+  schemes to solve them.
+  \mypause%
+  \begin{itemize}
+  \item Major recent theoretical development in plasma physics is the
+    discovery of gyrokinetic equations, an asymptotic approximation
+    for plasmas in strong magnetic fields. Reduces dimensionality to
+    5D (from 6D) and eliminates cyclotron frequency and gyroradius
+    from the system. Very active area of research.
+\mypause%
+  \item Many fluid approximations have been developed to treat plasma
+    via low-order moments: extended MHD models; multimoment models;
+    various reduced MHD equations
+    \mypause%
+  \item Numerical methods for these equations have undergone
+    renaissance in recent years: emphasis on \emph{memetic} schemes
+    that preserve conservation laws and some geometric features of the
+    continuous equations. Based on Lagrangian and Hamiltonian
+    formulation of basic equations. Very active area of research.
+  \end{itemize}
+  With advent of large scale computing much research is now focused on
+  schemes that scale well on thousands (millions) of CPU/GPU cores.
+\end{frame}
+
+\begin{frame}{Integrating kinetic effects in fluid models}
+
+  \begin{itemize}
+  \item For physically accurate simulations of various fusion
+    machines, its important to {\bf go beyond resistive and Hall-MHD}.
+  \item Traditional approach has been to use a generalized Ohm's law,
+    adding physics to it in a piecemeal fashion.
+  \item However, this approach has limited success, and in particular,
+    there is no systematic way to add important collisionless kinetic
+    effects in a self-consistent and numerically tractable manner.
+  \item A major challenge in the fusion and other applications is that
+    the {\bf plasma is nearly collisionless}, and that the {\bf
+      magnetic fields (external coils, planetary dipole) add a
+      preferred direction}, adding significant anisotropy to the
+    system.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Alternative is to use
+    multi-fluid moment models}
+
+  \begin{itemize}
+  \item In this approach we take moments of the Vlasov equation,
+    truncating the moment sequence using a closure.
+  \item The interaction between species is via electromagnetic fields,
+    which are evolved using Maxwell equations (retaining displacement
+    currents)
+  \item This approach allows natural and self-consistent inclusion of
+    {\bf finite electron inertia, Hall currents, anisotropic pressure
+      tensor and heat flux tensor}.
+  \item Even though the multi-fluid moment equations contain physics
+    all the way from light waves and electron dynamics to MHD scales,
+    by use of advanced algorithms very efficient and robust schemes
+    can be developed, {\bf allowing us to treat a sequence of
+      increasing fidelity models in a uniform and consistent manner}.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Sequence of models with 5, 10 and 20 moments}
+  \small%
+  Taking moments of Vlasov equation leads to the \emph{exact} moment
+  equations listed below
+  \begin{align*}
+    \pfrac{n}{t}+\pfraca{x_j}(nu_j) &= 0 \\
+    m\pfraca{t}(nu_i) + \pfrac{\mathcal{P}_{ij}}{x_j} &= nq(E_i+\epsilon_{ijk}u_jB_k) \\
+    \pfrac{\mathcal{P}_{ij}}{t} + \pfrac{\mathcal{Q}_{ijk}}{x_k} &= nqu_{[i}E_{j]} + \frac{q}{m}\epsilon_{[ikl}\mathcal{P}_{kj]}B_l\\
+    \pfrac{\mathcal{Q}_{ijk}}{t} + \pfrac{\mathcal{K}_{ijkl}}{x_l} &= \frac{q}{m}(E_{[i}\mathcal{P}_{jk]} + \epsilon_{[ilm}\mathcal{Q}_{ljk]}B_m)
+  \end{align*}
+  In the {\bf five-moment} model, we assume that the pressure is
+  isotropic $P_{ij} = p \delta_{ij}$. For the {\bf ten-moment} model,
+  we include the time-dependent equations for all six components of
+  the pressure tensor, and use a closure for the heat-flux. In the
+  {\bf twenty-moment} model, we evolve all ten components of the
+  heat-flux tensor, closing at the fourth moment.
+
+\end{frame}
+
+\begin{frame}{Planetary Scale Simulations Are Now Possible!}
+
+  \begin{figure}
+    \setkeys{Gin}{width=0.75\linewidth,keepaspectratio}
+    \incfig{Mercury-1.png}
+    \caption{Ten-Moment Simulation of Mercury's Magnetosphere (Dong
+      et. al. GRL, {\bf 46}, 2019}
+  \end{figure}
+  
+\end{frame}
+
+\begin{frame}{Reconnection On Mercury's Night and Day Sides}
+
+  \begin{figure}
+    \setkeys{Gin}{width=0.9\linewidth,keepaspectratio}
+    \incfig{Mercury-Reconnection.png}
+  \end{figure} 
+  
+\end{frame}
+
+\begin{frame}{Earth-Scale Simulations Are ``Almost'' Possible}
+
+  \begin{figure}
+    \setkeys{Gin}{width=0.95\linewidth,keepaspectratio}
+    \incfig{Earth-Magnetosphere.png}
+    \caption{Ten-Moment simulation of Earth's magnetosphere shows
+      extended night-side current sheet, just after a disruption
+      driven by ballooning instability. Wang et. al. JCP {\bf 415},
+      2020}
+  \end{figure} 
+  
+\end{frame}
+
+\begin{frame}{More Planetary Magnetospheres: Uranus}
+
+  \begin{figure}
+    \setkeys{Gin}{width=0.75\linewidth,keepaspectratio}
+    \incfig{Uranus-Magnetosphere.png}
+    \caption{Ten-Moment simulation of Uranus's magnetosphere shows
+      extremely complex magnetic-field structure due to dipole axis
+      tilt with respective to revolution plane.}
+  \end{figure}  
+
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator}
+  \small%
+  Consider first the simple harmonic oscillator
+  \begin{align*}
+    \frac{d^2z}{dt^2} = -\omega^2 z
+  \end{align*}
+  This has exact solution $z = a\cos(\omega t) + b\sin(\omega t)$,
+  where $a$ and $b$ are arbitrary constants. How to solve this
+  numerically? Write as a system of first-order ODEs
+  \begin{align*}
+    \frac{dz}{dt} = v; \quad \frac{dv}{dt} = -\omega^2 z
+  \end{align*}
+  Note that the coordinates $(z,v)$ label the \emph{phase-space} of
+  the harmonic oscillator. Multiply the second equation by $v$ and use
+  the first equation to get
+  \begin{align*}
+    \frac{d}{dt}\left(\frac{1}{2} v^2 + \frac{1}{2}\omega^2 z^2\right) = 0.
+  \end{align*}
+  This is the \emph{energy} and is \emph{conserved}.%
+  
+  \bf{Question: how to solve the ODE such that the energy is conserved
+    by the \emph{discrete scheme}?}
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  First attempt: use the simplest possible scheme, replace derivatives
+  with difference approximations
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} = v^n; \quad \frac{v^{n+1}-v^n}{\Delta t} = -\omega^2 z^n
+  \end{align*}
+  or
+  \begin{align*}
+    z^{n+1} = z^n + \Delta t v^n; \quad v^{n+1} = v^n - \Delta t \omega^2 z^n
+  \end{align*}
+  This is the \emph{forward Euler} scheme. Lets check if the discrete
+  scheme conserves energy:
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 =
+    (1+\omega^2 \Delta t^2)((v^{n})^2 + \omega^2 (z^{n})^2)
+  \end{align*}
+  The presence of the $\omega^2 \Delta t^2$ in the bracket spoils the
+  conservation. So the forward Euler scheme \emph{does not} conserve
+  energy. Also, note that the energy, in fact, is \emph{increasing}!
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Forward Euler Scheme}
+  Closer look: write as a matrix equation
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+    \right]
+    =
+    \underbrace{
+    \left[
+    \begin{matrix}
+      1 & \Delta t \\
+      -\omega^2 \Delta t & 1
+    \end{matrix}
+    \right]
+    }_{\textrm{Jacobian},\ J}
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  Observe that the determinant of the Jacobian is
+  $\det(J)=(1+\omega^2\Delta t^2)$ which is the same factor as appears
+  in the energy relation. One may reasonably conjecture that when this
+  determinant is one, then perhaps energy is conserved.
+
+  \begin{block}{Volume Preserving Scheme}
+    We will call say a scheme preserves \emph{phase-space} volume
+    if the determinant of the Jacobian is $\det(J)=1$.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme}
+  \small%
+  Perhaps a better approximation will be obtained if we use
+  \emph{averaged} values of $z,v$ on the RHS of the discrete
+  equation:
+  \begin{align*}
+    \frac{z^{n+1}-z^n}{\Delta t} &= \frac{v^n +v^{n+1}}{2} \\
+    \frac{v^{n+1}-v^n}{\Delta t} &= -\omega^2\frac{z^n + z^{n+1}}{2}
+  \end{align*}
+  This is an \emph{implicit} method as the solution at the next
+  time-step depends on the old as well as the next time-step
+  values. In this simple case we can explicitly write the update in a
+  matrix form as
+  \begin{align*}
+    \left[
+    \begin{matrix}
+      z^{n+1} \\
+      v^{n+1}
+    \end{matrix}
+      \right]
+      =
+      \frac{1}{1+\omega^2\Delta t^2/4}
+    \left[
+      \begin{matrix}
+        1-\omega^2\Delta t^2/4  & \Delta t \\
+        -\omega^2 \Delta t & 1-\omega^2\Delta t^2/4
+      \end{matrix}
+    \right]
+    \left[
+    \begin{matrix}
+      z^{n} \\
+      v^{n}
+    \end{matrix}
+    \right].                        
+  \end{align*}
+  For this scheme $\det(J)=1$. So the mid-point scheme conserves
+  phase-space volume! Some algebra also shows that
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
+  \end{align*}
+  showing that energy is also conserved by the mid-point scheme.
+\end{frame}
+
+\begin{frame}{Harmonic oscillator: Mid-point Scheme is symplectic}
+  A more stringent constraint on a scheme for the simple harmonic
+  oscillator is that it be \emph{symplectic}. To check if a scheme is
+  symplectic one checks to see if
+  \begin{align*}
+    J^T\sigma J = \sigma
+  \end{align*}
+  where $\sigma$ is the \emph{unit symplectic matrix}
+  \begin{align*}
+    \sigma
+    =
+    \left[
+      \begin{matrix}
+        0 & 1 \\
+        -1 & 0
+      \end{matrix}
+    \right]    
+  \end{align*}
+  Turns out that the mid-point scheme for the harmonic oscillator is
+  also symplectic. Note that if a scheme conserves phase-space
+  volume, it \emph{need not} be symplectic.
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  \small%
+  To study the stability, accuracy and convergence of a scheme one usually
+  looks at the first order ODE
+  \begin{align*}
+    \frac{dz}{dt} = -\gamma z
+  \end{align*}
+  where $\gamma = \lambda + i\omega$ is the complex frequency. The
+  exact solution to this equation is $z(t) = z_0 e^{-\gamma t}$. The
+  solution has damped/growing modes ($\lambda>0$ or $\lambda<0$) as
+  well as oscillating modes.
+
+  \begin{itemize}
+    \item The forward Euler scheme for this equation is
+      \begin{align*}
+        z^{n+1} = z^n - \Delta t \gamma z^n = (1-\Delta t\gamma) z^n.
+      \end{align*}
+    \item The mid-point scheme for this equation is
+      \begin{align*}
+        z^{n+1} = \left(\frac{1-\gamma\Delta t/2}{1+\gamma\Delta t/2}\right) z^n
+      \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine how \emph{accurate} the scheme is by looking at how
+  many terms the scheme matches the Taylor series expansion of the
+  exact solution:
+  \begin{align*}
+    z(t^{n+1}) = z(t^n)
+    \left(
+    1 - \gamma\Delta t + \frac{1}{2}\gamma^2 \Delta t^2 - \frac{1}{6}\gamma^3 \Delta t^3 + \ldots
+    \right)
+  \end{align*}
+
+  \begin{itemize}
+  \item The forward Euler scheme matches the \emph{first two terms}
+    \begin{align*}
+      z^{n+1} = z^n (1-\Delta t\gamma)
+    \end{align*}
+  \item The mid-point scheme matches the \emph{first three terms}
+    \begin{align*}
+      z^{n+1} = z^n \left(
+      1-\Delta t\gamma - \frac{1}{2}\gamma^2 \Delta t^2  - \frac{1}{4} \gamma^3 \Delta t^3 + \ldots
+      \right)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Accuracy and Stability}
+  We can determine if the scheme is \emph{stable} by looking at the
+  amplification factor $| z^{n+1}/z^n|$. Note that for damped modes
+  ($\lambda>0$) this quantity \emph{decays} in time, while for purely
+  oscillating modes ($\lambda = 0$) this quantity remains
+  \emph{constant}.
+
+  
+  \begin{itemize}
+  \item The amplification factor for the forward Euler scheme in the
+    absence of damping is $1+\omega^2\Delta t^2 > 1$, hence this
+    scheme is \emph{unconditionally unstable}.
+  \item The amplification factor for the mid-point scheme in the
+    absence of damping is exactly 1, showing that the mid-point scheme
+    is \emph{unconditionally stable}, that is, one can take as large
+    time-step one wants without the scheme ``blowing up''. Of course,
+    the errors will increase with larger $\Delta t$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Runge-Kutta schemes}
+  \begin{itemize}
+  \item Even though the forward Euler scheme is unconditionally
+    unstable, we can use it to construct other schemes that \emph{are}
+    stable and are also more accurate (than first order).
+  \item For example, a class of Runge-Kutta schemes can be written as
+    a combination of forward Euler updates. In particular, the
+    \emph{strong stability preserving} schemes are important when
+    solving hyperbolic equations. Note that these RK schemes will
+    \emph{not} conserve energy for the harmonic oscillator, but
+    \emph{decay} it.
+  \item Other multi-stage Runge-Kutta schemes can be constructed that
+    allow very large time-steps for diffusive processes, for example,
+    that come about when time-stepping diffusion equations.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator}
+  We looked at
+  \begin{align*}
+    \frac{d^2z}{dt^2} = -\omega^2 z
+  \end{align*}
+  and wrote it as system of first-order ODEs
+  \begin{align*}
+    \frac{dz}{dt} = v; \quad \frac{dv}{dt} = -\omega^2 z
+  \end{align*}
+  Now introduce energy-angle coordinates
+  \begin{align*}
+    \omega z = E\sin\theta; \quad v = E\cos\theta
+  \end{align*}
+  then $E^2 = \omega^2 z^2 + v^2 \equiv E_0^2$ is a constant as we
+  showed before. Using these expressions we get the very simple ODE
+  $\dot{\theta} = \omega$. This shows that in phase-space
+  $(v,\omega z)$ the motion is with uniform angular speed along a
+  circle.
+\end{frame}
+
+\begin{frame}{Simple harmonic oscillator: Phase-errors}
+  \small%
+  The mid-point scheme had
+  \begin{align*}
+    (v^{n+1})^2 + \omega^2 (z^{n+1})^2 = (v^{n})^2 + \omega^2 (z^{n})^2
+    = E_0^2
+  \end{align*}
+  which means that the mid-point scheme gets the energy coordinate
+  \emph{exactly} correct. However, we have
+  \begin{align*}
+    \tan\theta^{n+1} = \frac{\omega z^{n+1}}{v^{n+1}}.
+  \end{align*}
+  Using the expressions for the scheme and Taylor expanding in
+  $\Delta t$ we get
+  \begin{align*}
+    \tan\theta^{n+1}
+    =
+    \tan\theta^n +
+    \frac{\omega E_0^2}{(v^{n})^2}\Delta t +
+    \frac{\omega^3 z^n E_0^2}{(v^n)^3}\Delta t^2
+    + O(\Delta t^3)
+  \end{align*}
+  The first three terms match the Taylor expansion of the exact
+  solution $\tan(\theta^n+\omega\Delta t)$ and the last term is the
+  \emph{phase-error}.
+\end{frame}
+
+\end{document}
+
+\begin{frame}{}
+\end{frame}
+
+% ----------------------------------------------------------------

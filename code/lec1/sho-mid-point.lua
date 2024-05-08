@@ -1,4 +1,8 @@
 local DataStruct = require "DataStruct"
+local Mpi = require "Comm.Mpi"
+local Adios = require "Io.Adios"
+
+GKYL_ADIOS2_MPI = GKYL_ADIOS2_MPI or Adios.init_mpi(Mpi.COMM_WORLD)
 
 -- stores particle position and velocity (third component to make
 -- plotter happy)

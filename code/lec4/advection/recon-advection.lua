@@ -11,6 +11,11 @@ local Lin = require "Lib.Linalg"
 local Basis = require "Basis"
 local Updater = require "Updater"
 
+local Mpi = require "Comm.Mpi"
+local Adios = require "Io.Adios"
+
+GKYL_ADIOS2_MPI = GKYL_ADIOS2_MPI or Adios.init_mpi(Mpi.COMM_WORLD)
+
 -- Simulation parameters
 polyOrder = 2 -- polynomial order
 cfl = 0.5/(2*polyOrder+1) -- CFL number
@@ -82,23 +87,23 @@ initDist:advance(0.0, {}, {f})
 applyBc(f)
 f:write("f_0.bp", 0.0)
 
--- integrated density
-local densityCalc = Updater.CartFieldIntegratedQuantCalc {
-   onGrid = grid,
-   basis = basis,
-   numComponents = 1,
-   quantity = "V"
-}
-local fSquareCalc = Updater.CartFieldIntegratedQuantCalc {
-   onGrid = grid,
-   basis = basis,
-   numComponents = 1,
-   quantity = "V2"
-}
+-- -- integrated density
+-- local densityCalc = Updater.CartFieldIntegratedQuantCalc {
+--    onGrid = grid,
+--    basis = basis,
+--    numComponents = 1,
+--    quantity = "V"
+-- }
+-- local fSquareCalc = Updater.CartFieldIntegratedQuantCalc {
+--    onGrid = grid,
+--    basis = basis,
+--    numComponents = 1,
+--    quantity = "V2"
+-- }
 
 local function calcDiag(tm, fld)
-   densityCalc:advance(tm, { fld }, { density })
-   fSquareCalc:advance(tm, { fld }, { fSquare })
+   --densityCalc:advance(tm, { fld }, { density })
+   --fSquareCalc:advance(tm, { fld }, { fSquare })
 end
 calcDiag(0.0, f)
 density:write("density_0.bp", 0.0)
